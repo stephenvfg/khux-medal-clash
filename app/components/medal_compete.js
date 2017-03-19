@@ -51,7 +51,11 @@ export default class medal_compete extends Component {
             />
             <div className='caption text-center'>
               <h4>
-                <Link to={'/medals/' + medal.slug}><strong>{medal.name}</strong></Link>
+                <Link to={'/medals/' + medal.slug}><strong>
+                  { medal.name }
+                  { medal.isGuilted ? (' (Guilted)') : ('') }
+                  { medal.isBoosted ? (' (Boosted)') : ('') }
+                </strong></Link>
               </h4>
             </div>
           </div>

@@ -36,7 +36,11 @@ export default class Medal extends Component {
   render() {
     return this.state.medal ? (
       <div className='container'>
-        <h1 className='profile-name'><strong>{this.state.medal.name}</strong></h1>
+        <h1 className='profile-name'><strong>
+          { this.state.medal.name }
+          { this.state.medal.isGuilted ? (' (Guilted)') : ('') }
+          { this.state.medal.isBoosted ? (' (Boosted)') : ('') }
+        </strong></h1>
         <div className='col-sm-4'>
           <div className='profile-img'>
             <MedalImg isGuilted={this.state.medal.isGuilted} isBoosted={this.state.medal.isBoosted} 
