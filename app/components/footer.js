@@ -44,7 +44,7 @@ export default class Footer extends Component {
           <div className='row'>
             <div className='col-sm-4'>
               <h3 className='lead'><strong>KHUX</strong> Medal Clash</h3>
-              <p>🔑+❤️ for the Kingdom Hearts Union x [CROSS] community. <Link to='/roadmap'>See what's next.</Link></p>
+              <p>🔑+❤️ for the Kingdom Hearts Union x [CROSS] community. <Link to='/roadmap'>See what's next.</Link> <a href="mailto:khuxmedalclash@gmail.com">Contact site owner.</a></p>
               <p>Credit to Sahat Yalkabov for his open source project <a href="https://github.com/sahat/newedenfaces-react" target="_blank">here</a>.</p>
             </div>
             <div className='col-sm-8 hidden-xs'>

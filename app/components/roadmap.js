@@ -29,16 +29,13 @@ export default class Roadmap extends Component {
             <div className='col-xs-12 col-sm-4'>
               <h1>Launch checklist</h1>
               <ul>
+                <li><strong>AUTHENTICATION - For Add medal and API usage</strong></li>
                 <li>Format "add medal" form</li>
                 <li>Hide "add medal" form from public (authentication?)</li>
                 <li>Add 3 second timer between votes to prevent vote spamming</li>
                 <li>Captcha after first 7 clicks - include note about not being a dick and cookie the response</li>
                 <li>Close the API from unauthenticated calls</li>
-                <li>GitHub!</li>
                 <li>Scrape KH UX wiki with script to retrieve all medal data</li>
-                <li>Implement user session monitoring</li>
-                <li>Google Analytics</li>
-                <li>Deployment plan?</li>
               </ul>
               <h1>Done</h1>
               <ul>
@@ -64,6 +61,11 @@ export default class Roadmap extends Component {
                 <li><del>Clean up header</del></li>
                 <li><del>Clean up footer</del></li>
                 <li><del>Clean up styles</del></li>
+                <li><del>GitHub!</del></li>
+                <li><del>Deployment plan?</del></li>
+                <li><del>Google Analytics</del></li>
+                <li><del>Implement user session monitoring</del></li>
+                <li><del>Add contact info</del></li>
               </ul>
             </div>
             <div className='col-xs-12 col-sm-4'>
