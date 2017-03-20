@@ -72,6 +72,7 @@ export default class Roadmap extends Component {
               <h1>Upcoming Features</h1>
               <ul>
                 <li>More filtering options (by guilt, boost, tier, etc)</li>
+                <li>Add link to boosted and guilted versions of medal in the medal profile.</li>
                 <li>Better loading spinner</li>
                 <li>Search results LIST</li>
                 <li>Better Stats page / rankings</li>
