@@ -47,6 +47,34 @@ export default class Navbar extends Component {
     }
   }
 
+  handleLogin(event) {
+    event.preventDefault();
+
+    let username = this.state.username.trim();
+    let password = this.state.password.trim();
+
+    if (username && password) {
+      NavbarActions.login(username, password);
+    }
+  }
+
+  handleSignup(event) {
+    event.preventDefault();
+
+    let username = this.state.username.trim();
+    let password = this.state.password.trim();
+
+    if (username && password) {
+      NavbarActions.signup(username, password);
+    }
+  }
+
+  handleSignout(event) {
+    event.preventDefault();
+
+    NavbarActions.signout();
+  }
+
   render() {
     return (
       <nav className='navbar navbar-default navbar-static-top'>
@@ -94,7 +122,7 @@ export default class Navbar extends Component {
                 <li><Link to='/shame'>Hall of Shame</Link></li>
               </ul>
             </li>
-            <li><Link to='/add'>Add</Link></li>
+            { this.state.user.admin ? (<li><Link to='/add'>Add</Link></li>) : ('') }
           </ul>
           <form ref='searchForm' className='navbar-form navbar-left animated' onSubmit={this.handleSubmit.bind(this)}>
             <div className='input-group'>
@@ -104,6 +132,53 @@ export default class Navbar extends Component {
               </span>
             </div>
           </form>
+          <ul className='nav navbar-nav'>
+            { this.state.user.username ? (
+              <li className='dropdown login-signup'>
+                <a href='#' className='dropdown-toggle' data-toggle='dropdown'>{this.state.user.username} <span className='caret'></span></a>
+                <ul className='dropdown-menu'>
+                  <li>
+                    <form ref='loginForm' className='navbar-form animated' onSubmit={this.handleSignout.bind(this)}>
+                      <div className='input-group'>
+                        <span className='input-group-btn'>
+                          <button className='btn btn-default' onClick={this.handleSignout.bind(this)}>Sign Out</button>
+                        </span>
+                      </div>
+                    </form>
+                  </li>
+                </ul>
+              </li>
+            ) : (
+              <li className='dropdown login-signup'>
+                <a href='#' className='dropdown-toggle' data-toggle='dropdown'>Login / Signup <span className='caret'></span></a>
+                <ul className='dropdown-menu'>
+                  <li>
+                    <form ref='loginForm' className='navbar-form animated' onSubmit={this.handleLogin.bind(this)}>
+                      <div className='input-group'>
+                        <input type='text' className='form-control' placeholder='Username' value={this.state.username} onChange={NavbarActions.updateUsername} />
+                        <input type='text' className='form-control' placeholder='Password' value={this.state.password} onChange={NavbarActions.updatePassword} />
+                        <span className='input-group-btn'>
+                          <button className='btn btn-default' onClick={this.handleLogin.bind(this)}>Log In</button>
+                        </span>
+                      </div>
+                    </form>
+                  </li>
+                  <li>
+                    <form ref='signupForm' className='navbar-form animated' onSubmit={this.handleSignup.bind(this)}>
+                      <div className='input-group'>
+                        <input type='text' className='form-control' placeholder='Username' value={this.state.username} onChange={NavbarActions.updateUsername} />
+                        <input type='text' className='form-control' placeholder='Password' value={this.state.password} onChange={NavbarActions.updatePassword} />
+                        <input type='text' className='form-control' placeholder='Password (again)' value={this.state.password2} onChange={NavbarActions.updatePassword2} />
+                        <span className='input-group-btn'>
+                          <button className='btn btn-default' onClick={this.handleSignup.bind(this)}>Sign Up</button>
+                        </span>
+                      </div>
+                    </form>
+                  </li>
+                </ul>
+              </li>
+            )}
+          </ul>
         </div>
       </nav>
     );

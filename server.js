@@ -16,6 +16,9 @@ var fs = require('fs');
 var multiparty = require('multiparty');
 var sharp = require('sharp');
 
+var bcrypt = require('bcrypt');
+const saltRounds = 10;
+
 var async = require('async');
 var request = require('request');
 var xml2js = require('xml2js');
@@ -25,6 +28,9 @@ var _ = require('underscore');
 var mongoose = require('mongoose');
 var Medal = require('./models/medal');
 var Vote = require('./models/vote');
+var User = require('./models/user');
+
+// server
 
 var app = express();
 
@@ -34,141 +40,161 @@ mongoose.connection.on('error', function() {
 });
 
 app.set('port', process.env.PORT || 3000);
+app.set('superSecret', config.secret);
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-////////// API ENDPOINT DEFINITIONS BEGIN HERE //////////
+// passport authentication
 
-/**
- * POST /api/upload
- * Upload a file to the uploads directory.
- */
+var passport = require('passport');
+var expressSession = require('express-session');
+var LocalStrategy   = require('passport-local').Strategy;
 
-app.post('/api/upload', function(req, res) {
+app.use(expressSession({ secret: config.secret }));
+app.use(passport.initialize());
+app.use(passport.session());
 
-  var form = new multiparty.Form();
-
-  form.parse(req, (err, fields, files) => {
-
-    var tempPath = files.imageFile[0].path;
-    var originalFilename = files.imageFile[0].originalFilename;
-
-    fs.readFile(tempPath, function (err, data) {
-      if(!originalFilename){
-        console.info("There was an error - no image name found.")
-        res.redirect("/");
-        res.end();
-      } else {
-        var newPath = __dirname + "/uploads/fullsize/" + originalFilename;
-        var thumbPath = __dirname + "/uploads/thumbs/" + originalFilename;
-
-        fs.writeFile(newPath, data, (err) => {
-
-          sharp(newPath)
-            .resize(128, null)
-            .toFile(thumbPath, function(err) {
-              if (err) console.info(err);
-            });
-
-          fs.unlink(tempPath, () => {
-            console.info("File uploaded to: " + newPath);
-          });
-        }); 
-      }
-    });
+passport.serializeUser(function(user, done) {
+  done(null, user._id);
+});
+ 
+passport.deserializeUser(function(id, done) {
+  User.findById(id, function(err, user) {
+    done(err, user);
   });
 });
 
-/**
- * GET /api/uploads/fullsize/:file
- * Retrieve a full size image from the uploads directory.
- */
+passport.use('login', new LocalStrategy({ passReqToCallback : true },
+  function(req, username, password, done) { 
 
-app.get('/api/uploads/fullsize/:file', function (req, res){
-  file = req.params.file;
-  var img = fs.readFileSync(__dirname + "/uploads/fullsize/" + file);
-  res.writeHead(200, {'Content-Type': 'image/*' });
-  res.end(img, 'binary');
-});
+    User.findOne({ 'username' :  username }, 
+      function(err, user) {
 
-/**
- * GET /api/uploads/thumbs/:file
- * Retrieve a thumbnail image from the uploads directory.
- */
+        if (err) return done(err);
 
-app.get('/api/uploads/thumbs/:file', function (req, res){
-  file = req.params.file;
-  var img = fs.readFileSync(__dirname + "/uploads/thumbs/" + file);
-  res.writeHead(200, {'Content-Type': 'image/*' });
-  res.end(img, 'binary');
-});
+        if (!user){
+          return done(null, false, { message: 'User not found.' });   
+        }
+        if (!isValidPassword(user, password)){
+          return done(null, false, { message: 'Invalid password.' });
+        }
 
-/**
- * POST /api/medals
- * Adds a new medal to the database.
- */
-
-app.post('/api/medals', function(req, res, next) {
-
-  var name = req.body.name;
-  var slug = req.body.slug;
-  var no = req.body.no;
-  var imgPath = req.body.imgPath;
-  var affinity = req.body.affinity;
-  var attribute = req.body.attribute;
-  var baseStr = req.body.baseStr;
-  var baseDef = req.body.baseDef;
-  var spAtk = req.body.spAtk;
-  var spDesc = req.body.spDesc;
-  var target = req.body.target;
-  var tier = req.body.tier;
-  var mult = req.body.mult;
-  var gauges = req.body.gauges;
-  var isGuilted = req.body.isGuilted;
-  var isBoosted = req.body.isBoosted;
-
-  async.waterfall([
-    function() {
-      try {
-        var medal = new Medal({
-          name: name,
-          no: no,
-          slug: slug,
-          imgPath: imgPath,
-          affinity: affinity,
-          attribute: attribute,
-          baseStr: baseStr,
-          baseDef: baseDef,
-          spAtk: spAtk,
-          spDesc: spDesc,
-          target: target,
-          tier: tier,
-          mult: mult,
-          gauges: gauges,
-          isGuilted: isGuilted,
-          isBoosted: isBoosted,
-          random: [Math.random(), 0]
-        });
-
-        medal.save(function(err) {
-          if (err) return next(err);
-        });
-
-      } catch (e) {
-        res.status(404).send({ message: name + ' could not be added.' });
+        return done(null, user);
       }
+    );
+}));
 
-      res.send({ message: name + ' has been added successfully!' });
-    }
-  ]);
+passport.use('signup', new LocalStrategy({ passReqToCallback : true },
+  function(req, username, password, done) {
+
+    findOrCreateUser = function(){
+
+      User.findOne({ 'username': username },function(err, user) {
+
+        if (err) return done(err);
+
+        if (user) {
+          return done(null, false, { message: 'User already exists' });
+        } else {
+          var newUser = new User();
+          newUser.username = username;
+          newUser.password = createHash(password);
+ 
+          newUser.save(function(err) {
+            if (err) throw err;
+
+            return done(null, newUser);
+          });
+        }
+      });
+    };
+     
+    process.nextTick(findOrCreateUser);
+  })
+);
+
+var isValidPassword = function(user, password){
+  return bcrypt.compareSync(password, user.password);
+}
+
+var createHash = function(password){
+ return bcrypt.hashSync(password, bcrypt.genSaltSync(10), null);
+}
+
+var isAuthenticated = function (req, res, next) {
+  if (req.isAuthenticated()) return next();
+  res.redirect('/api/noauth');
+}
+
+var isAuthenticatedAdmin = function (req, res, next) {
+  if (req.isAuthenticated() && req.user.admin) return next();
+  res.redirect('/api/noauth');
+}
+
+
+/////////////////////////////////////////////////////////
+////////// API ENDPOINT DEFINITIONS BEGIN HERE //////////
+/////////////////////////////////////////////////////////
+
+/**
+ * GET /api/noauth
+ * Returns error message when user is not authenticated 
+ */
+
+app.get('/api/noauth', function(req, res, next) {
+  res.send({ message: 'Authentication required.' });
 });
+
+/**
+ * GET /api/login
+ * Returns error message when user is not authenticated 
+ */
+
+app.get('/api/login', isAuthenticated, function(req, res, next) {
+  res.send({ user: req.user });
+});
+
+/**
+ * POST /api/login
+ * Authenticates user with passport
+ */
+
+app.post('/api/login', passport.authenticate('login', {
+  successRedirect: '/api/login',
+  failureRedirect: '/login'
+}));
+
+/**
+ * POST /api/signup
+ * Creates new user with passport
+ */
+
+app.post('/api/signup', passport.authenticate('signup', {
+  successRedirect: '/api/login',
+  failureRedirect: '/signup'
+}));
+
+/**
+ * GET /api/signout
+ * Signs out current user
+ */
+ 
+app.get('/api/signout', function(req, res, next) {
+  req.logout();
+  res.redirect(req.get('referer'));
+});
+
+/////////////////////////////////////////////////////////
+///////// NO AUTHENTICATION FOR ALL ROUTES BELOW ////////
+/////////////////////////////////////////////////////////
 
 /**
  * GET /api/medals
  * Returns 2 random medals that have not been voted yet.
  */
+
 app.get('/api/medals', function(req, res, next) {
 
   Medal.find({ random: { $near: [Math.random(), 0] } })
@@ -198,10 +224,35 @@ app.get('/api/medals', function(req, res, next) {
 });
 
 /**
+ * GET /api/uploads/fullsize/:file
+ * Retrieve a full size image from the uploads directory.
+ */
+
+app.get('/api/uploads/fullsize/:file', function (req, res){
+  file = req.params.file;
+  var img = fs.readFileSync(__dirname + "/uploads/fullsize/" + file);
+  res.writeHead(200, {'Content-Type': 'image/*' });
+  res.end(img, 'binary');
+});
+
+/**
+ * GET /api/uploads/thumbs/:file
+ * Retrieve a thumbnail image from the uploads directory.
+ */
+
+app.get('/api/uploads/thumbs/:file', function (req, res){
+  file = req.params.file;
+  var img = fs.readFileSync(__dirname + "/uploads/thumbs/" + file);
+  res.writeHead(200, {'Content-Type': 'image/*' });
+  res.end(img, 'binary');
+});
+
+/**
  * PUT /api/medals
  * Update winning and losing count for both medals. 
  * Create new Vote based on outcome.
  */
+
 app.put('/api/medals', function(req, res, next) {
   var winner = req.body.winner;
   var loser = req.body.loser;
@@ -565,7 +616,128 @@ app.get('/api/stats', function(req, res, next) {
     });
 });
 
-////////// API ENDPOINT DEFINITIONS END HERE //////////
+/////////////////////////////////////////////////////////
+////// AUTHENTICATION REQUIRED FOR ALL ROUTES BELOW /////
+/////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////
+/// ADMIN AUTHENTICATION REQUIRED FOR ALL ROUTES BELOW //
+/////////////////////////////////////////////////////////
+
+/**
+ * GET /api/users
+ * Retrieve a list of all users.
+ */
+
+app.get('/api/users', isAuthenticatedAdmin, function (req, res){
+  User.find({}, function(err, users) {
+    res.json(users);
+  });
+});
+
+/**
+ * POST /api/upload
+ * Upload a file to the uploads directory.
+ */
+
+app.post('/api/upload', isAuthenticatedAdmin, function(req, res) {
+
+  var form = new multiparty.Form();
+
+  form.parse(req, (err, fields, files) => {
+
+    var tempPath = files.imageFile[0].path;
+    var originalFilename = files.imageFile[0].originalFilename;
+
+    fs.readFile(tempPath, function (err, data) {
+      if(!originalFilename){
+        console.info("There was an error - no image name found.")
+        res.redirect("/");
+        res.end();
+      } else {
+        var newPath = __dirname + "/uploads/fullsize/" + originalFilename;
+        var thumbPath = __dirname + "/uploads/thumbs/" + originalFilename;
+
+        fs.writeFile(newPath, data, (err) => {
+
+          sharp(newPath)
+            .resize(128, null)
+            .toFile(thumbPath, function(err) {
+              if (err) console.info(err);
+            });
+
+          fs.unlink(tempPath, () => {
+            console.info("File uploaded to: " + newPath);
+          });
+        }); 
+      }
+    });
+  });
+});
+
+/**
+ * POST /api/medals
+ * Adds a new medal to the database.
+ */
+
+app.post('/api/medals', isAuthenticatedAdmin, function(req, res, next) {
+
+  var name = req.body.name;
+  var slug = req.body.slug;
+  var no = req.body.no;
+  var imgPath = req.body.imgPath;
+  var affinity = req.body.affinity;
+  var attribute = req.body.attribute;
+  var baseStr = req.body.baseStr;
+  var baseDef = req.body.baseDef;
+  var spAtk = req.body.spAtk;
+  var spDesc = req.body.spDesc;
+  var target = req.body.target;
+  var tier = req.body.tier;
+  var mult = req.body.mult;
+  var gauges = req.body.gauges;
+  var isGuilted = req.body.isGuilted;
+  var isBoosted = req.body.isBoosted;
+
+  async.waterfall([
+    function() {
+      try {
+        var medal = new Medal({
+          name: name,
+          no: no,
+          slug: slug,
+          imgPath: imgPath,
+          affinity: affinity,
+          attribute: attribute,
+          baseStr: baseStr,
+          baseDef: baseDef,
+          spAtk: spAtk,
+          spDesc: spDesc,
+          target: target,
+          tier: tier,
+          mult: mult,
+          gauges: gauges,
+          isGuilted: isGuilted,
+          isBoosted: isBoosted,
+          random: [Math.random(), 0]
+        });
+
+        medal.save(function(err) {
+          if (err) return next(err);
+        });
+
+      } catch (e) {
+        res.status(404).send({ message: name + ' could not be added.' });
+      }
+
+      res.send({ message: name + ' has been added successfully!' });
+    }
+  ]);
+});
+
+/////////////////////////////////////////////////////////
+/////////// API ENDPOINT DEFINITIONS END HERE ///////////
+/////////////////////////////////////////////////////////
 
 app.use(function(req, res) {
   Router.match({ routes: routes.default, location: req.url }, function(err, redirectLocation, renderProps) {

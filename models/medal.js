@@ -21,7 +21,9 @@ var medalSchema = new mongoose.Schema({
   losses: { type: Number, default: 0 },
   ratio: { type: Number, default: 0 },
   random: { type: [Number], index: '2d' },
-  voted: { type: Boolean, default: false }
+  voted: { type: Boolean, default: false },
+  addedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  _active: { type: Boolean, default: true }
 });
 
 module.exports = mongoose.model('Medal', medalSchema);

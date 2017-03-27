@@ -4,6 +4,15 @@ import { assign } from 'underscore';
 class NavbarActions {
   constructor() {
     this.generateActions(
+      'loginSuccess',
+      'loginFail',
+      'signupSuccess',
+      'signupFail',
+      'signoutSuccess',
+      'signoutFail',
+      'updateUsername',
+      'updatePassword',
+      'updatePassword2',
       'updateAjaxAnimation',
       'updateSearchQuery',
       'getMedalCountSuccess',
@@ -11,6 +20,50 @@ class NavbarActions {
       'findMedalSuccess',
       'findMedalFail'
     );
+  }
+
+  login(username, password) {
+    $.ajax({
+      type: 'POST',
+      url: '/api/login',
+      data: { 
+        username: username,
+        password: password
+      }
+    })
+      .done((data) => {
+        this.actions.loginSuccess(data.user);
+      })
+      .fail((jqXhr) => {
+        this.actions.loginFail(jqXhr);
+      });
+  }
+
+  signup(username, password) {
+    $.ajax({
+      type: 'POST',
+      url: '/api/signup',
+      data: { 
+        username: username,
+        password: password
+      }
+    })
+      .done((data) => {
+        this.actions.signupSuccess(data.user);
+      })
+      .fail((jqXhr) => {
+        this.actions.signupFail(jqXhr);
+      }); 
+  }
+
+  signout() {
+    $.ajax({ url: '/api/signout' })
+      .done((data) => {
+        this.actions.signoutSuccess();
+      })
+      .fail((jqXhr) => {
+        this.actions.signoutFail(jqXhr);
+      }); 
   }
 
   findMedal(payload) {
