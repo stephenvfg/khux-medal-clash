@@ -46,7 +46,9 @@ export default (props) => {
 	    		<p>STR</p>
 	    	</div>
       	<div className='col-xs-9'>
-	    		<p><strong>{props.medal.baseStr}</strong></p>
+	    		<p className={ props.medal.strBoost && props.medal.strBoost > 0 ? ('spText') : ('') }><strong>
+	    			{props.medal.baseStr + props.medal.strBoost}
+	    		</strong></p>
 	    	</div>
 	    </div>
     	<div className='row card-def'>
@@ -54,7 +56,9 @@ export default (props) => {
 	    		<p>DEF</p>
 	    	</div>
       	<div className='col-xs-9'>
-	    		<p><strong>{props.medal.baseDef}</strong></p>
+	    		<p className={ props.medal.defBoost && props.medal.defBoost > 0 ? ('spText') : ('') }><strong>
+	    			{props.medal.baseDef + props.medal.defBoost}
+	    		</strong></p>
 	    	</div>
 	    </div>
     	<div className='row card-spatk'>

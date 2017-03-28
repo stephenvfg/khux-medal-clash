@@ -128,6 +128,11 @@ var isAuthenticated = function (req, res, next) {
   res.redirect('/api/noauth');
 }
 
+var isAuthenticatedContributor = function (req, res, next) {
+  if (req.isAuthenticated() && (req.user.admin || req.user.contributor)) return next();
+  res.redirect('/api/noauth');
+}
+
 var isAuthenticatedAdmin = function (req, res, next) {
   if (req.isAuthenticated() && req.user.admin) return next();
   res.redirect('/api/noauth');
@@ -256,6 +261,7 @@ app.get('/api/uploads/thumbs/:file', function (req, res){
 app.put('/api/medals', function(req, res, next) {
   var winner = req.body.winner;
   var loser = req.body.loser;
+  var voter = req.body.voter ? req.body.voter : null;
 
   if (!winner || !loser) {
     return res.status(400).send({ message: 'Voting requires two medals.' });
@@ -269,64 +275,65 @@ app.put('/api/medals', function(req, res, next) {
     winner: winner,
     loser: loser,
     date: new Date(),
+    voter: voter,
     ip: req.ip
   });
 
   async.parallel([
+    function(callback) {
+      Medal.findOne({ _id: winner }, function(err, winner) {
+        callback(err, winner);
+      });
+    },
+    function(callback) {
+      Medal.findOne({ _id: loser }, function(err, loser) {
+        callback(err, loser);
+      });
+    }
+  ],
+  function(err, results) {
+    if (err) return next(err);
+
+    var winner = results[0];
+    var loser = results[1];
+
+    if (!winner || !loser) {
+      return res.status(404).send({ message: 'One of the medals no longer exists.' });
+    }
+
+    if (winner.voted || loser.voted) {
+      return res.status(200).end();
+    }
+
+    async.parallel([
       function(callback) {
-        Medal.findOne({ _id: winner }, function(err, winner) {
-          callback(err, winner);
+        winner.wins++;
+        winner.ratio = ((winner.wins / (winner.wins + winner.losses)) || 0);
+        winner.voted = true;
+        winner.random = [Math.random(), 0];
+        winner.save(function(err) {
+          callback(err);
         });
       },
       function(callback) {
-        Medal.findOne({ _id: loser }, function(err, loser) {
-          callback(err, loser);
+        loser.losses++;
+        loser.ratio = ((loser.wins / (loser.wins + loser.losses)) || 0);
+        loser.voted = true;
+        loser.random = [Math.random(), 0];
+        loser.save(function(err) {
+          callback(err);
+        });
+      },
+      function(callback) {
+        vote.save(function(err) {
+          callback(err);
         });
       }
-    ],
-    function(err, results) {
+    ], function(err) {
       if (err) return next(err);
-
-      var winner = results[0];
-      var loser = results[1];
-
-      if (!winner || !loser) {
-        return res.status(404).send({ message: 'One of the medals no longer exists.' });
-      }
-
-      if (winner.voted || loser.voted) {
-        return res.status(200).end();
-      }
-
-      async.parallel([
-        function(callback) {
-          winner.wins++;
-          winner.ratio = ((winner.wins / (winner.wins + winner.losses)) || 0);
-          winner.voted = true;
-          winner.random = [Math.random(), 0];
-          winner.save(function(err) {
-            callback(err);
-          });
-        },
-        function(callback) {
-          loser.losses++;
-          loser.ratio = ((loser.wins / (loser.wins + loser.losses)) || 0);
-          loser.voted = true;
-          loser.random = [Math.random(), 0];
-          loser.save(function(err) {
-            callback(err);
-          });
-        },
-        function(callback) {
-          vote.save(function(err) {
-            callback(err);
-          });
-        }
-      ], function(err) {
-        if (err) return next(err);
-        res.status(200).end();
-      });
+      res.status(200).end();
     });
+  });
 });
 
 /**
@@ -373,7 +380,7 @@ app.get('/api/medals/top', function(req, res, next) {
 
   Medal
     .find(conditions)
-    .sort({'ratio':-1})
+    .sort({'ratio':-1, 'wins':-1})
     .limit(100)
     .exec(function(err, medals) {
       if (err) return next(err);
@@ -388,7 +395,7 @@ app.get('/api/medals/top', function(req, res, next) {
 app.get('/api/medals/shame', function(req, res, next) {
   Medal
     .find()
-    .sort({'ratio':1})
+    .sort({'ratio':1, 'losses':-1})
     .limit(100)
     .exec(function(err, medals) {
       if (err) return next(err);
@@ -621,26 +628,15 @@ app.get('/api/stats', function(req, res, next) {
 /////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////
-/// ADMIN AUTHENTICATION REQUIRED FOR ALL ROUTES BELOW //
+///// CONTRIBUTOR AUTH REQUIRED FOR ALL ROUTES BELOW ////
 /////////////////////////////////////////////////////////
-
-/**
- * GET /api/users
- * Retrieve a list of all users.
- */
-
-app.get('/api/users', isAuthenticatedAdmin, function (req, res){
-  User.find({}, function(err, users) {
-    res.json(users);
-  });
-});
 
 /**
  * POST /api/upload
  * Upload a file to the uploads directory.
  */
 
-app.post('/api/upload', isAuthenticatedAdmin, function(req, res) {
+app.post('/api/upload', isAuthenticatedContributor, function(req, res) {
 
   var form = new multiparty.Form();
 
@@ -680,7 +676,7 @@ app.post('/api/upload', isAuthenticatedAdmin, function(req, res) {
  * Adds a new medal to the database.
  */
 
-app.post('/api/medals', isAuthenticatedAdmin, function(req, res, next) {
+app.post('/api/medals', isAuthenticatedContributor, function(req, res, next) {
 
   var name = req.body.name;
   var slug = req.body.slug;
@@ -698,6 +694,9 @@ app.post('/api/medals', isAuthenticatedAdmin, function(req, res, next) {
   var gauges = req.body.gauges;
   var isGuilted = req.body.isGuilted;
   var isBoosted = req.body.isBoosted;
+  var strBoost = req.body.strBoost;
+  var defBoost = req.body.defBoost;
+  var addedBy = req.body.addedBy;
 
   async.waterfall([
     function() {
@@ -719,7 +718,10 @@ app.post('/api/medals', isAuthenticatedAdmin, function(req, res, next) {
           gauges: gauges,
           isGuilted: isGuilted,
           isBoosted: isBoosted,
-          random: [Math.random(), 0]
+          strBoost: strBoost,
+          defBoost: defBoost,
+          random: [Math.random(), 0],
+          addedBy: addedBy
         });
 
         medal.save(function(err) {
@@ -733,6 +735,21 @@ app.post('/api/medals', isAuthenticatedAdmin, function(req, res, next) {
       res.send({ message: name + ' has been added successfully!' });
     }
   ]);
+});
+
+/////////////////////////////////////////////////////////
+/// ADMIN AUTHENTICATION REQUIRED FOR ALL ROUTES BELOW //
+/////////////////////////////////////////////////////////
+
+/**
+ * GET /api/users
+ * Retrieve a list of all users.
+ */
+
+app.get('/api/users', isAuthenticatedAdmin, function (req, res){
+  User.find({}, function(err, users) {
+    res.json(users);
+  });
 });
 
 /////////////////////////////////////////////////////////

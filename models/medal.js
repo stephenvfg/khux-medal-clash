@@ -17,6 +17,8 @@ var medalSchema = new mongoose.Schema({
   gauges: Number,
   isGuilted: Boolean,
   isBoosted: Boolean,
+  strBoost: Number,
+  defBoost: Number,
   wins: { type: Number, default: 0 },
   losses: { type: Number, default: 0 },
   ratio: { type: Number, default: 0 },

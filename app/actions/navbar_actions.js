@@ -6,6 +6,8 @@ class NavbarActions {
     this.generateActions(
       'loginSuccess',
       'loginFail',
+      'loggedInSuccess',
+      'loggedInFail',
       'signupSuccess',
       'signupFail',
       'signoutSuccess',
@@ -36,6 +38,16 @@ class NavbarActions {
       })
       .fail((jqXhr) => {
         this.actions.loginFail(jqXhr);
+      });
+  }
+
+  loggedIn() {
+    $.ajax({ url: '/api/login' })
+      .done((data) => {
+        this.actions.loggedInSuccess(data.user);
+      })
+      .fail((jqXhr) => {
+        this.actions.loggedInFail();
       });
   }
 

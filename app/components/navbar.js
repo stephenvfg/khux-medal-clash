@@ -12,6 +12,8 @@ export default class Navbar extends Component {
 
   componentDidMount() {
     NavbarStore.listen(this.onChange);
+
+    NavbarActions.loggedIn();
     NavbarActions.getMedalCount();
 
     $(document).ajaxStart(() => {
@@ -122,7 +124,7 @@ export default class Navbar extends Component {
                 <li><Link to='/shame'>Hall of Shame</Link></li>
               </ul>
             </li>
-            { this.state.user.admin ? (<li><Link to='/add'>Add</Link></li>) : ('') }
+            { this.state.user && this.state.user.admin ? (<li><Link to='/add'>Add</Link></li>) : ('') }
           </ul>
           <form ref='searchForm' className='navbar-form navbar-left animated' onSubmit={this.handleSubmit.bind(this)}>
             <div className='input-group'>
@@ -133,7 +135,7 @@ export default class Navbar extends Component {
             </div>
           </form>
           <ul className='nav navbar-nav'>
-            { this.state.user.username ? (
+            { this.state.user && this.state.user.username ? (
               <li className='dropdown login-signup'>
                 <a href='#' className='dropdown-toggle' data-toggle='dropdown'>{this.state.user.username} <span className='caret'></span></a>
                 <ul className='dropdown-menu'>

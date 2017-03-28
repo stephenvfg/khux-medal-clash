@@ -9,19 +9,56 @@ export default (props) => {
         <div className='col-xs-12 col-sm-4'>
           <h1>Launch checklist</h1>
           <ul>
-            <li>Add user info to medal submits</li>
-            <li>Add user info to medal votes</li>
             <li>Format the login dropdown</li>
             <li>Validation for the login dropdown</li>
             <li>User settings page: change username, password, email</li>
+            <li>Collect email from user at login</li>
+            <li>Generate new password</li>
             <li>Add 2 second timer between votes to prevent vote spamming</li>
             <li>Ask to sign in / make user account after first 7 clicks</li>
-            <li>Add "boost amount" to medals</li>
-            <li>ADMIN PANEL</li>
+            <li>ADMIN PANEL: ability to edit user rights</li>
+            <li>Contributor panel: ability to view medals you've added, edit medals</li>
             <li>Add all medals</li>
+            <li>Add "help needed" section</li>
+            <li>Review the if '(winner.voted || loser.voted) return res.status(200).end();' logic</li>
+            <li>Add notice to top of screen about "You can play without registering BUT if you register you get to ... and no emails</li>
+            <li>Add "HOW THIS WORKS" section... medals in system (boosted/guilted) --> vote --> generate stats --> vote more --> create geniune ranking list --> view other info</li>
           </ul>
+        </div>
+        <div className='col-xs-12 col-sm-4'>
+          <h1>Upcoming Features</h1>
+          <ul>
+            <li>Add ability to compare two specific medals</li>
+            <li>Format "add medal" form</li>
+            <li>List/stream of recent votes</li>
+            <li>More filtering options (by guilt, boost, tier, etc)</li>
+            <li>Add link to boosted and guilted versions of medal in the medal profile.</li>
+            <li>Better loading spinners and placeholder graphics</li>
+            <li>Search results LIST</li>
+            <li>Better Stats page / rankings</li>
+            <li>Add ratio trend graph</li>
+            <li>Add "medal showdown" feature to pit two medals specifically against each other</li>
+            <li>Place a small advertisement square on the page</li>
+          </ul>
+        </div>
+        <div className='col-xs-12 col-sm-4'>
+          <h1>Bug Fixes</h1>
+          <ul>
+            <li><del>When I click "isBoosted", I cannot un-check it</del></li>
+            <li>When I hover over a Boosted sign, I cannot click on the medal itself</li>
+            <li>Guilt icon flickers when I click on medal</li>
+            <li>No file type validation on the server side</li>
+            <li>No number validation on "add" form</li>
+          </ul>
+        </div>
+        <div className='col-xs-12 col-sm-12'>
           <h1>Done</h1>
           <ul>
+            <li><del>On load, automatically check for login and display user login</del></li>
+            <li><del>Add "boost amount" to medals</del></li>
+            <li><del>Add user info to medal submits</del></li>
+            <li><del>Add user info to medal votes</del></li>
+            <li><del>Make 'contributer' user account type with validations</del></li>
             <li><del>Hide "add medal" form from public (authentication?)</del></li>
             <li><del>Close the API from unauthenticated calls</del></li>
             <li><del>AUTHENTICATION - For Add medal and API usage</del></li>
@@ -53,31 +90,6 @@ export default (props) => {
             <li><del>Google Analytics</del></li>
             <li><del>Implement user session monitoring</del></li>
             <li><del>Add contact info</del></li>
-          </ul>
-        </div>
-        <div className='col-xs-12 col-sm-4'>
-          <h1>Upcoming Features</h1>
-          <ul>
-            <li>Format "add medal" form</li>
-            <li>List/stream of recent votes</li>
-            <li>More filtering options (by guilt, boost, tier, etc)</li>
-            <li>Add link to boosted and guilted versions of medal in the medal profile.</li>
-            <li>Better loading spinner</li>
-            <li>Search results LIST</li>
-            <li>Better Stats page / rankings</li>
-            <li>Add ratio trend graph</li>
-            <li>Add "medal showdown" feature to pit two medals specifically against each other</li>
-            <li>Place a small advertisement square on the page</li>
-          </ul>
-        </div>
-        <div className='col-xs-12 col-sm-4'>
-          <h1>Bug Fixes</h1>
-          <ul>
-            <li><del>When I click "isBoosted", I cannot un-check it</del></li>
-            <li>When I hover over a Boosted sign, I cannot click on the medal itself</li>
-            <li>Guilt icon flickers when I click on medal</li>
-            <li>No file type validation on the server side</li>
-            <li>No number validation on "add" form</li>
           </ul>
         </div>
       </div>

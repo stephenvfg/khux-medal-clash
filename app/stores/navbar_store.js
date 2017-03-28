@@ -23,6 +23,12 @@ class NavbarStore {
     toastr.error(jqXhr.responseJSON.message);
   }
 
+  onLoggedInSuccess(user) {
+    this.user = user;
+  }
+
+  onLoggedInFail() { /* do nothing */ }
+
   onSignupSuccess(user) {
     this.user = user;
   }

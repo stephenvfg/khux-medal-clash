@@ -3,6 +3,8 @@ import alt from '../alt';
 class MedalAddActions {
   constructor() {
     this.generateActions(
+      'loggedInSuccess',
+      'loggedInFail',
       'medalAddSuccess',
       'medalAddFail',
       'uploadSuccess',
@@ -42,7 +44,18 @@ class MedalAddActions {
     );
   }
 
-  addMedal(name, no, imgPath, affinity, attribute, baseStr, baseDef, spAtk, spDesc, target, tier, mult, gauges, isGuilted, isBoosted) {
+  loggedIn() {
+    $.ajax({ url: '/api/login' })
+      .done((data) => {
+        this.actions.loggedInSuccess(data.user);
+      })
+      .fail((jqXhr) => {
+        this.actions.loggedInFail();
+      });
+  }
+
+  addMedal(name, no, imgPath, affinity, attribute, baseStr, baseDef, spAtk, spDesc, target, tier, mult, 
+      gauges, isGuilted, isBoosted, strBoost, defBoost, addedBy) {
     
     var slug = name.toLowerCase()
       .replace(/\s+/g, '-')
@@ -73,7 +86,10 @@ class MedalAddActions {
         mult: mult,
         gauges: gauges,
         isGuilted: isGuilted,
-        isBoosted: isBoosted
+        isBoosted: isBoosted,
+        strBoost: strBoost,
+        defBoost: defBoost,
+        addedBy: addedBy
       }
     })
       .done((data) => {

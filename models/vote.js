@@ -4,7 +4,7 @@ var voteSchema = new mongoose.Schema({
   winner: { type: mongoose.Schema.Types.ObjectId, ref: 'Medal' },
   loser: { type: mongoose.Schema.Types.ObjectId, ref: 'Medal' },
   date: mongoose.Schema.Types.Date,
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  voter: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   ip: String,
   _active: { type: Boolean, default: true }
 });

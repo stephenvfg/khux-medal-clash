@@ -5,6 +5,8 @@ class MedalAddStore {
   constructor() {
     this.bindActions(MedalAddActions);
 
+    this.user = '';
+
     this.file = '';
     this.imagePreviewUrl = '';
 
@@ -40,6 +42,12 @@ class MedalAddStore {
     this.strBoostValidationState = '';
     this.defBoostValidationState = '';
   }
+
+  onLoggedInSuccess(user) {
+    this.user = user;
+  }
+
+  onLoggedInFail() { /* do nothing */ }
 
   onMedalAddSuccess(successMessage) {
     this.nameValidationState = 'has-success';

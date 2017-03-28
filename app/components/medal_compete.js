@@ -16,6 +16,8 @@ export default class medal_compete extends Component {
 
   componentDidMount() {
     MedalCompeteStore.listen(this.onChange);
+
+    MedalCompeteActions.loggedIn();
     MedalCompeteActions.getTwoMedals();
   }
 
@@ -30,7 +32,9 @@ export default class medal_compete extends Component {
   handleClick(medal) {
     var winner = medal._id;
     var loser = first(without(this.state.medals, findWhere(this.state.medals, { _id: winner })))._id;
-    MedalCompeteActions.vote(winner, loser);
+    var voter = this.state.user ? this.state.user._id : null;
+
+    MedalCompeteActions.vote(winner, loser, voter);
   }
 
   onClickShow(event){
