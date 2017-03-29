@@ -11,6 +11,7 @@ class NavbarStore {
     this.username = '';
     this.password = '';
     this.password2 = '';
+    this.email = '';
 
     this.user = '';
   }
@@ -45,6 +46,14 @@ class NavbarStore {
     toastr.error(jqXhr.responseJSON.message); 
   }
 
+  onForgotSuccess(message) {
+    toastr.success(message); 
+  }
+
+  onForgotFail(jqXhr) {
+    toastr.error(jqXhr.responseJSON.message); 
+  }
+
   onUpdateUsername(event) {
     this.username = event.target.value;
   }
@@ -55,6 +64,10 @@ class NavbarStore {
 
   onUpdatePassword2(event) {
     this.password2 = event.target.value;
+  }
+
+  onUpdateEmail(event) {
+    this.email = event.target.value;
   }
 
   onFindMedalSuccess(payload) {

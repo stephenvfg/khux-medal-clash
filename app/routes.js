@@ -9,6 +9,7 @@ import MedalVotes from './components/medal_votes';
 import MedalList from './components/medal_list';
 import Stats from './components/stats';
 import Roadmap from './components/roadmap';
+import UserReset from './components/user_reset';
 
 export default (
   <Route path='/' component={App}>
@@ -18,6 +19,7 @@ export default (
     <Route path='/stats' component={Stats} />
     <Route path='/votes' component={MedalVotes} />
     <Route path='/roadmap' component={Roadmap} />
+    <Route path='/reset/:token' component={UserReset} />
     <Route path=':category' component={MedalList}>
       <Route path=':attribute' component={MedalList}>
         <Route path=':affinity' component={MedalList} />

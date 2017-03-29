@@ -12,9 +12,12 @@ class NavbarActions {
       'signupFail',
       'signoutSuccess',
       'signoutFail',
+      'forgotSuccess',
+      'forgotFail',
       'updateUsername',
       'updatePassword',
       'updatePassword2',
+      'updateEmail',
       'updateAjaxAnimation',
       'updateSearchQuery',
       'getMedalCountSuccess',
@@ -51,13 +54,14 @@ class NavbarActions {
       });
   }
 
-  signup(username, password) {
+  signup(username, password, email) {
     $.ajax({
       type: 'POST',
       url: '/api/signup',
       data: { 
         username: username,
-        password: password
+        password: password,
+        email: email
       }
     })
       .done((data) => {
@@ -75,6 +79,22 @@ class NavbarActions {
       })
       .fail((jqXhr) => {
         this.actions.signoutFail(jqXhr);
+      }); 
+  }
+
+  forgot(email) {
+    $.ajax({
+      type: 'POST',
+      url: '/api/forgot',
+      data: { 
+        email: email
+      }
+    })
+      .done((data) => {
+        this.actions.forgotSuccess(data.message);
+      })
+      .fail((jqXhr) => {
+        this.actions.forgotFail(jqXhr);
       }); 
   }
 

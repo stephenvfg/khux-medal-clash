@@ -65,9 +65,10 @@ export default class Navbar extends Component {
 
     let username = this.state.username.trim();
     let password = this.state.password.trim();
+    let email = this.state.email.trim();
 
-    if (username && password) {
-      NavbarActions.signup(username, password);
+    if (username && password && email) {
+      NavbarActions.signup(username, password, email);
     }
   }
 
@@ -75,6 +76,16 @@ export default class Navbar extends Component {
     event.preventDefault();
 
     NavbarActions.signout();
+  }
+
+  handleForgot(event) {
+    event.preventDefault();
+
+    let email = this.state.email.trim();
+
+    if (email) {
+      NavbarActions.forgot(email);
+    }
   }
 
   render() {
@@ -158,7 +169,7 @@ export default class Navbar extends Component {
                     <form ref='loginForm' className='navbar-form animated' onSubmit={this.handleLogin.bind(this)}>
                       <div className='input-group'>
                         <input type='text' className='form-control' placeholder='Username' value={this.state.username} onChange={NavbarActions.updateUsername} />
-                        <input type='text' className='form-control' placeholder='Password' value={this.state.password} onChange={NavbarActions.updatePassword} />
+                        <input type='password' className='form-control' placeholder='Password' value={this.state.password} onChange={NavbarActions.updatePassword} />
                         <span className='input-group-btn'>
                           <button className='btn btn-default' onClick={this.handleLogin.bind(this)}>Log In</button>
                         </span>
@@ -169,10 +180,21 @@ export default class Navbar extends Component {
                     <form ref='signupForm' className='navbar-form animated' onSubmit={this.handleSignup.bind(this)}>
                       <div className='input-group'>
                         <input type='text' className='form-control' placeholder='Username' value={this.state.username} onChange={NavbarActions.updateUsername} />
-                        <input type='text' className='form-control' placeholder='Password' value={this.state.password} onChange={NavbarActions.updatePassword} />
-                        <input type='text' className='form-control' placeholder='Password (again)' value={this.state.password2} onChange={NavbarActions.updatePassword2} />
+                        <input type='email' className='form-control' placeholder='Email' value={this.state.email} onChange={NavbarActions.updateEmail} />
+                        <input type='password' className='form-control' placeholder='Password' value={this.state.password} onChange={NavbarActions.updatePassword} />
+                        <input type='password' className='form-control' placeholder='Password (again)' value={this.state.password2} onChange={NavbarActions.updatePassword2} />
                         <span className='input-group-btn'>
                           <button className='btn btn-default' onClick={this.handleSignup.bind(this)}>Sign Up</button>
+                        </span>
+                      </div>
+                    </form>
+                  </li>
+                  <li>
+                    <form ref='forgotForm' className='navbar-form animated' onSubmit={this.handleForgot.bind(this)}>
+                      <div className='input-group'>
+                        <input type='email' className='form-control' placeholder='Email' value={this.state.email} onChange={NavbarActions.updateEmail} />
+                        <span className='input-group-btn'>
+                          <button className='btn btn-default' onClick={this.handleForgot.bind(this)}>Submit</button>
                         </span>
                       </div>
                     </form>

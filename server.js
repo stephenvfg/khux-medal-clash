@@ -15,6 +15,8 @@ var bodyParser = require('body-parser');
 var fs = require('fs');
 var multiparty = require('multiparty');
 var sharp = require('sharp');
+var nodemailer = require('nodemailer');
+var crypto = require('crypto');
 
 var bcrypt = require('bcrypt');
 const saltRounds = 10;
@@ -99,8 +101,10 @@ passport.use('signup', new LocalStrategy({ passReqToCallback : true },
           return done(null, false, { message: 'User already exists' });
         } else {
           var newUser = new User();
+
           newUser.username = username;
           newUser.password = createHash(password);
+          newUser.email = req.body.email;
  
           newUser.save(function(err) {
             if (err) throw err;
@@ -189,6 +193,126 @@ app.post('/api/signup', passport.authenticate('signup', {
 app.get('/api/signout', function(req, res, next) {
   req.logout();
   res.redirect(req.get('referer'));
+});
+
+/**
+ * POST /api/forgot
+ * Submits password reset token
+ */
+
+app.post('/api/forgot', function(req, res, next) {
+  async.waterfall([
+    function(done) {
+      crypto.randomBytes(20, function(err, buf) {
+        var token = buf.toString('hex');
+        done(err, token);
+      });
+    },
+    function(token, done) {
+      User.findOne({ email: req.body.email }, function(err, user) {
+        if (!user) {
+          return res.status(404).send({ message: 'Could not find email for: ' + req.body.email });
+        }
+
+        user.resetPasswordToken = token;
+        user.resetPasswordExpires = Date.now() + 3600000;
+
+        user.save(function(err) {
+          done(err, token, user);
+        });
+      });
+    },
+    function(token, user, done) {
+      var smtpTransport = nodemailer.createTransport({
+        service: 'Gmail',
+        auth: {
+          user: 'khuxmedalclash@gmail.com',
+          pass: 'Q9EfI0Ic'
+        }
+      });
+      var mailOptions = {
+        to: user.email,
+        from: 'khuxmedalclash@gmail.com',
+        subject: 'KHUX Medal Clash Password Reset',
+        text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
+          'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
+          'http://' + req.headers.host + '/reset/' + token + '\n\n' +
+          'If you did not request this, please ignore this email and your password will remain unchanged.\n'
+      };
+      smtpTransport.sendMail(mailOptions, function(err) {
+        res.send({ message: 'An e-mail has been sent to ' + user.email + ' with further instructions.' });
+        done(err, 'done');
+      });
+    }
+  ], function(err) {
+    if (err) return next(err);
+  });
+});
+
+/**
+ * GET /api/reset/:token
+ * Validates token for password reset
+ */
+
+app.get('/api/reset/:token', function(req, res) {
+  User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function(err, user) {
+    if (err) return next(err);
+
+    if (!user) {
+      return res.status(404).send({ message: 'Password reset token is invalid or has expired.' });
+    }
+
+    res.send({ 'user': user });
+  });
+});
+
+/**
+ * POST /api/reset/:token
+ * Submits new password for password reset
+ */
+
+ app.post('/api/reset/:token', function(req, res) {
+  async.waterfall([
+    function(done) {
+      User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function(err, user) {
+        if (err) return next(err);
+
+        if (!user) {
+          return res.status(404).send({ message: 'Password reset token is invalid or has expired.' });
+        }
+
+        user.password = createHash(req.body.password);
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpires = undefined;
+
+        user.save(function(err) {
+          done(err, user);
+        });
+      });
+    },
+    function(user, done) {
+      var smtpTransport = nodemailer.createTransport({
+        service: 'Gmail',
+        auth: {
+          user: 'khuxmedalclash@gmail.com',
+          pass: 'Q9EfI0Ic'
+        }
+      });
+      var mailOptions = {
+        to: user.email,
+        from: 'khuxmedalclash@gmail.com',
+        subject: 'Your password has been changed',
+        text: 'Hello,\n\n' +
+          'This is a confirmation that the password for your account ' + user.email + ' has just been changed.\n'
+      };
+      smtpTransport.sendMail(mailOptions, function(err) {
+        res.send({ message: 'Success! Your password has been changed.' });
+        done(err);
+      });
+    }
+  ], function(err) {
+    if (err) return next(err);
+  });
 });
 
 /////////////////////////////////////////////////////////
