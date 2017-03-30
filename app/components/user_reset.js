@@ -76,12 +76,12 @@ class UserReset extends Component {
                     <form onSubmit={this.handleSubmit.bind(this)} encType="multipart/form-data">
                       <div className={'form-group ' + this.state.passwordValidationState}>
                         <label className='control-label'>New Password</label>
-                        <input type='text' className='form-control' ref='password' value={this.state.password}
+                        <input type='password' className='form-control' ref='password' value={this.state.password}
                                onChange={UserResetActions.updatePassword} autoFocus/>
                       </div>
                       <div className={'form-group ' + this.state.password2ValidationState}>
                         <label className='control-label'>Confirm New Password</label>
-                        <input type='text' className='form-control' ref='password2' value={this.state.password2}
+                        <input type='password' className='form-control' ref='password2' value={this.state.password2}
                                onChange={UserResetActions.updatePassword2} autoFocus/>
                       </div>
                       <button type='submit' className='btn btn-primary'>Update Password</button>

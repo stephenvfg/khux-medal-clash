@@ -150,6 +150,8 @@ export default class Navbar extends Component {
               <li className='dropdown login-signup'>
                 <a href='#' className='dropdown-toggle' data-toggle='dropdown'>{this.state.user.username} <span className='caret'></span></a>
                 <ul className='dropdown-menu'>
+                  <li><Link to='/profile'>Profile</Link></li>
+                  { this.state.user.admin ? (<li><Link to='/admin'>Admin</Link></li>) : ('') }
                   <li>
                     <form ref='loginForm' className='navbar-form animated' onSubmit={this.handleSignout.bind(this)}>
                       <div className='input-group'>

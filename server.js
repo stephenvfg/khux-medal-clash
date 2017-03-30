@@ -147,6 +147,10 @@ var isAuthenticatedAdmin = function (req, res, next) {
 ////////// API ENDPOINT DEFINITIONS BEGIN HERE //////////
 /////////////////////////////////////////////////////////
 
+/////////////////////////////////////////////////////////
+/////////// LOGIN AND SIGNUP ENDPOINTS BELOW ////////////
+/////////////////////////////////////////////////////////
+
 /**
  * GET /api/noauth
  * Returns error message when user is not authenticated 
@@ -158,7 +162,7 @@ app.get('/api/noauth', function(req, res, next) {
 
 /**
  * GET /api/login
- * Returns error message when user is not authenticated 
+ * Returns logged in user
  */
 
 app.get('/api/login', isAuthenticated, function(req, res, next) {
@@ -464,6 +468,7 @@ app.put('/api/medals', function(req, res, next) {
  * GET /api/medals/count
  * Returns the total number of medals.
  */
+
 app.get('/api/medals/count', function(req, res, next) {
   Medal.count({}, function(err, count) {
     if (err) return next(err);
@@ -475,6 +480,7 @@ app.get('/api/medals/count', function(req, res, next) {
  * GET /api/medals/search
  * Looks up a medal by name. (case-insensitive)
  */
+
 app.get('/api/medals/search', function(req, res, next) {
   var medalName = new RegExp(req.query.name, 'i');
 
@@ -494,6 +500,7 @@ app.get('/api/medals/search', function(req, res, next) {
  * GET /api/medals/top
  * Return 100 highest ranked medals. Filter by conditions as defined in the app.
  */
+
 app.get('/api/medals/top', function(req, res, next) {
   var params = req.query;
   var conditions = {};
@@ -516,6 +523,7 @@ app.get('/api/medals/top', function(req, res, next) {
  * GET /api/medals/shame
  * Returns 100 lowest ranked medals.
  */
+
 app.get('/api/medals/shame', function(req, res, next) {
   Medal
     .find()
@@ -531,6 +539,7 @@ app.get('/api/medals/shame', function(req, res, next) {
  * GET /api/medals/:id
  * Returns detailed medal information by ID.
  */
+
 app.get('/api/medals/:id', function(req, res, next) {
   var id = req.params.id;
 
@@ -549,6 +558,7 @@ app.get('/api/medals/:id', function(req, res, next) {
  * GET /api/medal/:id/votes
  * Returns 10 most recent votes tied to the medal.
  */
+
 app.get('/api/medals/:id/votes', function(req, res, next) {
   var id = req.params.id;
 
@@ -567,6 +577,7 @@ app.get('/api/medals/:id/votes', function(req, res, next) {
  * GET /api/medals/slug/:slug
  * Returns detailed medal information by slug.
  */
+
 app.get('/api/medals/slug/:slug', function(req, res, next) {
   var slug = req.params.slug;
 
@@ -585,6 +596,7 @@ app.get('/api/medals/slug/:slug', function(req, res, next) {
  * GET /api/medals/vote/:id
  * Returns medals associated to vote id
  */
+
 app.get('/api/medals/vote/:id', function(req, res, next) {
   var id = req.params.id;
 
@@ -619,6 +631,7 @@ app.get('/api/medals/vote/:id', function(req, res, next) {
  * GET /api/votes
  * Returns 100 most recent votes.
  */
+
 app.get('/api/votes', function(req, res, next) {
 
   Vote
@@ -636,6 +649,7 @@ app.get('/api/votes', function(req, res, next) {
  * GET /api/votes/medal/:id
  * Returns 10 most recent votes tied to the medal.
  */
+
 app.get('/api/votes/medal/:id', function(req, res, next) {
   var id = req.params.id;
 
@@ -654,6 +668,7 @@ app.get('/api/votes/medal/:id', function(req, res, next) {
  * GET /api/stats
  * Returns medals statistics.
  */
+
 app.get('/api/stats', function(req, res, next) {
   async.parallel([
       function(callback) {
@@ -748,8 +763,79 @@ app.get('/api/stats', function(req, res, next) {
 });
 
 /////////////////////////////////////////////////////////
-////// AUTHENTICATION REQUIRED FOR ALL ROUTES BELOW /////
+//////// USER AUTH REQUIRED FOR ALL ROUTES BELOW ////////
 /////////////////////////////////////////////////////////
+
+/**
+ * PUT /api/user
+ * Update user profile information. 
+ */
+
+app.put('/api/user', isAuthenticated, function(req, res, next) {
+  var username = req.body.username;
+  var oldPassword = req.body.oldPassword;
+  var password = req.body.password;
+  var email = req.body.email;
+  var _id = req.body.id;
+
+  if (!_id) {
+    return res.status(400).send({ message: 'Must be logged in to update profile information.' });
+  }
+
+  async.waterfall([
+    function(done) {
+      User.findOne({ username: username }, function(err, usr1) {
+        done(err, usr1);
+      });
+    },
+    function(usr1, done) {
+      if (usr1 && username) {
+        return res.status(404).send({ message: 'Username already taken: ' + username });
+      }
+
+      User.findOne({ email: email }, function(err, usr2) {
+        done(err, usr2);
+      });
+    },
+    function(usr2, done) {
+      if (usr2 && email) {
+        return res.status(404).send({ message: 'Email already taken: ' + email });
+      }
+
+      User.findOne({ _id: _id }, function(err, user) {
+        done(err, user);
+      });
+    },
+    function(user, done) {
+      if (!user) {
+        return res.status(404).send({ message: 'Could not find user account.' });
+      }
+
+      if (password && !isValidPassword(user, oldPassword)){
+        return done(null, false, { message: 'Invalid password.' });
+      }
+
+      async.parallel([
+        function(callback) {
+          if (username) { user.username = username; }
+          if (password) { user.password = createHash(password); }
+          if (email) { user.email = email; }
+
+          user.save(function(err) {
+            if (err) return next(err)
+
+            req.login(user, function(err) {
+              if (err) return next(err)
+              res.status(200).send({ message: 'Profile information updated successfully.' });
+            })
+          })
+        }
+      ]);
+    }
+  ], function(err) {
+    if (err) return next(err);
+  });
+});
 
 /////////////////////////////////////////////////////////
 ///// CONTRIBUTOR AUTH REQUIRED FOR ALL ROUTES BELOW ////

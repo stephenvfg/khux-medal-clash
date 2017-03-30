@@ -12,14 +12,13 @@ export default (props) => {
             <li>Terms of Service + any other legal shit</li>
             <li>Format the login dropdown</li>
             <li>Validation for the login dropdown</li>
-            <li>User settings page: change username, password, email</li>
             <li>Add 2 second timer between votes to prevent vote spamming</li>
             <li>Ask to sign in / make user account after first 7 clicks</li>
             <li>ADMIN PANEL: ability to edit user rights</li>
             <li>Contributor panel: ability to view medals you've added, edit medals</li>
             <li>Add all medals</li>
             <li>Add "help needed" section</li>
-            <li>Error message for email or username that's already taken</li>
+            <li>Error message for email or username that's already taken ON SIGN UP</li>
             <li>Review the if '(winner.voted || loser.voted) return res.status(200).end();' logic</li>
             <li>Add notice to top of screen about "You can play without registering BUT if you register you get to ...</li>
             <li>Add "HOW THIS WORKS" section... medals in system (boosted/guilted) --> vote --> generate stats --> vote more --> create geniune ranking list --> view other info</li>
@@ -56,6 +55,7 @@ export default (props) => {
         <div className='col-xs-12 col-sm-12'>
           <h1>Done</h1>
           <ul>
+            <li><del>User settings page: change username, password, email</del></li>
             <li><del>Collect email from user at login</del></li>
             <li><del>Generate new password</del></li>
             <li><del>On load, automatically check for login and display user login</del></li>

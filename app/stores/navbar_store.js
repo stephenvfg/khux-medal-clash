@@ -18,6 +18,7 @@ class NavbarStore {
 
   onLoginSuccess(user) {
     this.user = user;
+    window.location.reload(false); 
   }
 
   onLoginFail(jqXhr) {
@@ -32,6 +33,7 @@ class NavbarStore {
 
   onSignupSuccess(user) {
     this.user = user;
+    window.location.reload(false); 
   }
 
   onSignupFail(jqXhr) {
@@ -40,6 +42,7 @@ class NavbarStore {
 
   onSignoutSuccess() {
     this.user = '';
+    window.location.reload(false); 
   }
 
   onSignoutFail(jqXhr) {
