@@ -15,16 +15,6 @@ export default class Navbar extends Component {
 
     NavbarActions.loggedIn();
     NavbarActions.getMedalCount();
-
-    $(document).ajaxStart(() => {
-      NavbarActions.updateAjaxAnimation('fadeIn');
-    });
-
-    $(document).ajaxComplete(() => {
-      setTimeout(() => {
-        NavbarActions.updateAjaxAnimation('fadeOut');
-      }, 750);
-    });
   }
 
   componentWillUnmount() {

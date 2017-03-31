@@ -10,6 +10,8 @@ export default (props) => {
           <h1>Launch checklist</h1>
           <ul>
             <li>Terms of Service + any other legal shit</li>
+            <li>Add GA tracking links for all relevant links</li>
+            <li>Replace success/fail messaging with proper toastr messaging (or other?)</li>
             <li>Format the login dropdown</li>
             <li>Validation for the login dropdown</li>
             <li>Add 2 second timer between votes to prevent vote spamming</li>
@@ -50,6 +52,7 @@ export default (props) => {
             <li>Guilt icon flickers when I click on medal</li>
             <li>No file type validation on the server side</li>
             <li>No number validation on "add" form</li>
+            <li><del>On admin page when not logged in as admin: Uncaught TypeError: this.state.users.map is not a function</del></li>
           </ul>
         </div>
         <div className='col-xs-12 col-sm-12'>

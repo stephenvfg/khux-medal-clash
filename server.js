@@ -417,6 +417,11 @@ app.put('/api/medals', function(req, res, next) {
       Medal.findOne({ _id: loser }, function(err, loser) {
         callback(err, loser);
       });
+    },
+    function(callback) {
+      User.findOne({ _id: voter }, function(err, voter) {
+        callback(err, voter);
+      });
     }
   ],
   function(err, results) {
@@ -424,6 +429,7 @@ app.put('/api/medals', function(req, res, next) {
 
     var winner = results[0];
     var loser = results[1];
+    var voter = results[2];
 
     if (!winner || !loser) {
       return res.status(404).send({ message: 'One of the medals no longer exists.' });
@@ -456,6 +462,16 @@ app.put('/api/medals', function(req, res, next) {
         vote.save(function(err) {
           callback(err);
         });
+      },
+      function(callback) {
+        if (voter) {
+          voter.votes++;
+          voter.save(function(err) {
+            callback(err);
+          });
+        } else {
+          callback();
+        }
       }
     ], function(err) {
       if (err) return next(err);
@@ -778,7 +794,7 @@ app.put('/api/user', isAuthenticated, function(req, res, next) {
   var email = req.body.email;
   var _id = req.body.id;
 
-  if (!_id) {
+  if (!_id || !req.user._id || req.user._id != _id) {
     return res.status(400).send({ message: 'Must be logged in to update profile information.' });
   }
 
@@ -935,7 +951,7 @@ app.post('/api/medals', isAuthenticatedContributor, function(req, res, next) {
         });
 
         medal.save(function(err) {
-          if (err) return next(err);
+          if (err) return console.info(err);
         });
 
       } catch (e) {
@@ -957,8 +973,29 @@ app.post('/api/medals', isAuthenticatedContributor, function(req, res, next) {
  */
 
 app.get('/api/users', isAuthenticatedAdmin, function (req, res){
-  User.find({}, function(err, users) {
-    res.json(users);
+  var start = req.query.start ? parseInt(req.query.start) : 0;
+
+  User
+    .find()
+    .sort({'username':1})
+    .limit(20)
+    .skip(start)
+    .exec({}, function(err, users) {
+      if (err) return console.info(err);
+
+      res.json(users);
+    });
+});
+
+/**
+ * GET /api/users/count
+ * Returns the total number of users.
+ */
+
+app.get('/api/users/count', isAuthenticatedAdmin, function(req, res, next) {
+  User.count({}, function(err, count) {
+    if (err) return next(err);
+    res.send({ count: count });
   });
 });
 
