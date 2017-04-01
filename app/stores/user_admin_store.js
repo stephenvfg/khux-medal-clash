@@ -7,7 +7,7 @@ class UserAdminStore {
 
     this.totalUsers = 0;
     this.users = [];
-    this.start = 0;
+    this.i = 0;
 
     this.successMessage = '';
 
@@ -30,9 +30,10 @@ class UserAdminStore {
     toastr.error(jqXhr.responseJSON.message);
   }
 
-  onUpdateStart(start) {
-    this.start = start;
-    UserAdminActions.getUsers(this.start);
+  onUpdateIndex(i) {
+    this.i = i;
+    this.successMessage = '';
+    UserAdminActions.getUsers(this.i);
   }
 
   onGetUserCountSuccess(data) {
@@ -40,6 +41,22 @@ class UserAdminStore {
   }
 
   onGetUserCountFail(jqXhr) {
+    toastr.error(jqXhr.responseJSON.message);
+  }
+
+  onUpdateContributorSuccess(message) {
+    this.successMessage = message;
+  }
+
+  onUpdateContributorFail(jqXhr) {
+    toastr.error(jqXhr.responseJSON.message);
+  }
+
+  onUpdateAdminSuccess(message) {
+    this.successMessage = message;
+  }
+
+  onUpdateAdminFail(jqXhr) {
     toastr.error(jqXhr.responseJSON.message);
   }
 }

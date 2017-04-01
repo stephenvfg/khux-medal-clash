@@ -9,7 +9,11 @@ class UserAdminActions {
       'getUsersFail',
       'getUserCountSuccess',
       'getUserCountFail',
-      'updateStart'
+      'updateContributorSuccess',
+      'updateContributorFail',
+      'updateAdminSuccess',
+      'updateAdminFail',
+      'updateIndex'
     );
   }
 
@@ -43,6 +47,40 @@ class UserAdminActions {
       })
       .fail((jqXhr) => {
         this.actions.getUserCountFail(jqXhr)
+      });
+  }
+
+  updateContributor(id, contributor) {
+    $.ajax({
+      type: 'PUT',
+      url: '/api/user/admin',
+      data: { 
+        id: id,
+        contributor: contributor 
+      }
+    })
+      .done((data) => {
+        this.actions.updateContributorSuccess(data.message);
+      })
+      .fail((jqXhr) => {
+        this.actions.updateContributorFail(jqXhr);
+      });
+  }
+
+  updateAdmin(id, admin) {
+    $.ajax({
+      type: 'PUT',
+      url: '/api/user/admin',
+      data: { 
+        id: id,
+        admin: admin 
+      }
+    })
+      .done((data) => {
+        this.actions.updateAdminSuccess(data.message);
+      })
+      .fail((jqXhr) => {
+        this.actions.updateAdminFail(jqXhr);
       });
   }
 }

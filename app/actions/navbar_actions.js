@@ -18,12 +18,23 @@ class NavbarActions {
       'updatePassword',
       'updatePassword2',
       'updateEmail',
+      'invalidUsername',
+      'invalidPassword',
+      'invalidPassword2',
+      'invalidEmail',
       'updateAjaxAnimation',
       'updateSearchQuery',
       'getMedalCountSuccess',
       'getMedalCountFail',
       'findMedalSuccess',
-      'findMedalFail'
+      'findMedalFail',
+      'checkUsername',
+      'checkEmail',
+      'getValidUsernameSuccess',
+      'getValidUsernameFail',
+      'getValidEmailSuccess',
+      'getValidEmailFail',
+      'updateFormState'
     );
   }
 
@@ -119,6 +130,32 @@ class NavbarActions {
       })
       .fail((jqXhr) => {
         this.actions.getMedalCountFail(jqXhr)
+      });
+  }
+
+  getValidUsername(username) {
+    $.ajax({ 
+      url: '/api/signup/username',
+      data: { username: username }
+    })
+      .done((data) => {
+        this.actions.getValidUsernameSuccess(data.valid);
+      })
+      .fail((jqXhr) => {
+        this.actions.getValidUsernameFail();
+      });
+  }
+
+  getValidEmail(email) {
+    $.ajax({ 
+      url: '/api/signup/email',
+      data: { email: email } 
+    })
+      .done((data) => {
+        this.actions.getValidEmailSuccess(data.valid);
+      })
+      .fail((jqXhr) => {
+        this.actions.getValidEmailFail();
       });
   }
 }

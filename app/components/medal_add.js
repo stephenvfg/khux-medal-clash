@@ -153,18 +153,20 @@ class MedalAdd extends Component {
   }
 
   render() {
+
     let { imagePreviewUrl } = this.state;
+
     let $imagePreview = null;
+
     if (imagePreviewUrl) {
-      $imagePreview = (<img src={imagePreviewUrl} height='300'/>);
+      $imagePreview = (<img src={imagePreviewUrl} width='100%'/>);
     }
 
     return (
       <div className='container'>
         <div className='row flipInX animated'>
           <div className='col-sm-8'>
-            { $imagePreview }
-            { this.state.user && this.state.user.admin 
+            { this.state.user && this.state.user.contributor 
               ? (
                 <div className='panel panel-default'>
                   <div className='panel-heading'>Add Medal</div>
@@ -312,6 +314,9 @@ class MedalAdd extends Component {
                 </div>
               ) 
             }
+          </div>
+          <div className='col-sm-4'>
+            { $imagePreview }
           </div>
         </div>
       </div>

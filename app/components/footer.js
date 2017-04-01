@@ -28,7 +28,7 @@ export default class Footer extends Component {
     let leaderboardMedals = this.state.medals.map((medal) => {
       return (
         <li key={medal._id}>
-          <Link to={'/medals/' + medal.slug}>
+          <Link to={'/medal/' + medal.slug}>
             <MedalImg isGuilted={medal.isGuilted} isBoosted={medal.isBoosted} 
                 tier={medal.tier} imgPath={medal.imgPath} large='' cl='thumb-md' dir='thumbs'
                 onClick='' 

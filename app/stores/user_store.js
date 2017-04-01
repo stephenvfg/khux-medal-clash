@@ -41,6 +41,9 @@ class UserStore {
 
   onUpdateSuccess(message) {
     this.successMessage = message;
+
+    this.initUsername = this.username;
+    this.initEmail = this.email;
   }
 
   onUpdateFail(jqXhr) {

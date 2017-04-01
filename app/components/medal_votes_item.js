@@ -10,7 +10,7 @@ export default (props) => {
         <div className='medal-vote-item animated fadeIn'>
           { props.winner ? (
             <div key={props.winner._id} className='col-xs-4 v-centered'>
-              <Link to={'/medals/' + props.winner.slug}>
+              <Link to={'/medal/' + props.winner.slug}>
                 <MedalImg isGuilted={props.winner.isGuilted} isBoosted={props.winner.isBoosted} 
                     tier={props.winner.tier} imgPath={props.winner.imgPath} large=''
                     cl='thumb-md' dir='thumbs' onClick='' 
@@ -23,7 +23,7 @@ export default (props) => {
           </div>
           { props.loser ? (
             <div key={props.loser._id} className='col-xs-4 v-centered'>
-              <Link to={'/medals/' + props.loser.slug}>
+              <Link to={'/medal/' + props.loser.slug}>
                 <MedalImg isGuilted={props.loser.isGuilted} isBoosted={props.loser.isBoosted} 
                     tier={props.loser.tier} imgPath={props.loser.imgPath} large=''
                     cl='thumb-md' dir='thumbs' onClick='' 
@@ -36,7 +36,7 @@ export default (props) => {
         <div className='medal-vote-item animated fadeIn'>
           { props.loser ? (
             <div key={props.loser._id} className='col-xs-4 v-centered'>
-              <Link to={'/medals/' + props.loser.slug}>
+              <Link to={'/medal/' + props.loser.slug}>
                 <MedalImg isGuilted={props.loser.isGuilted} isBoosted={props.loser.isBoosted} 
                     tier={props.loser.tier} imgPath={props.loser.imgPath} large=''
                     cl='thumb-md' dir='thumbs' onClick='' 
@@ -49,7 +49,7 @@ export default (props) => {
           </div>
           {props.winner ? (
             <div key={props.winner._id} className='col-xs-4 v-centered'>
-              <Link to={'/medals/' + props.winner.slug}>
+              <Link to={'/medal/' + props.winner.slug}>
                 <MedalImg isGuilted={props.winner.isGuilted} isBoosted={props.winner.isBoosted} 
                     tier={props.winner.tier} imgPath={props.winner.imgPath} large=''
                     cl='thumb-md' dir='thumbs' onClick='' 

@@ -16,8 +16,8 @@ class UserAdmin extends Component {
     UserAdminActions.getUserCount();
     UserAdminActions.loggedIn();
 
-    var s = this.props.location.query.start ? this.props.location.query.start : 0;
-    UserAdminActions.updateStart(s);
+    var i = this.props.location.query.i ? this.props.location.query.i : 0;
+    UserAdminActions.updateIndex(i);
   }
 
   componentWillUnmount() {
@@ -25,17 +25,35 @@ class UserAdmin extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    UserAdminActions.updateStart(nextProps.location.query.start);
+    UserAdminActions.updateIndex(nextProps.location.query.i);
   }
 
   onChange(state) {
     this.setState(state);
   }
 
-  updateStart(change) {
-    var newStart = parseInt(this.state.start) + parseInt(change);
-    if (newStart < 0) { newStart = 0; }
-    UserAdminActions.updateStart(newStart);
+  updateIndex(change) {
+    var newIndex = parseInt(this.state.i) + parseInt(change);
+    if (newIndex < 0) { newIndex = 0; }
+    UserAdminActions.updateIndex(newIndex);
+  }
+
+  handleContributorUpdate(event) {
+    event.preventDefault();
+
+    let id = event.target.getAttribute('data-id');
+    let contributor = event.target.value;
+
+    UserAdminActions.updateContributor(id, contributor);
+  }
+
+  handleAdminUpdate(event) {
+    event.preventDefault();
+
+    let id = event.target.getAttribute('data-id');
+    let admin = event.target.value;
+
+    UserAdminActions.updateAdmin(id, admin);
   }
 
   render() {
@@ -44,14 +62,41 @@ class UserAdmin extends Component {
       return (
         <tr key={user._id}>
           <td>{user.username}</td>
-          <td>{user.admin ? 'Admin' : 'Not Admin'}</td>
-          <td>{user.contributor ? 'Contributor' : 'Not Contributor'}</td>
+          <td>
+            <button className='btn btn-default' 
+                data-id={user._id} 
+                value={!user.admin} 
+                onClick={this.handleAdminUpdate.bind(this)}>
+              {user.admin ? 'Remove Admin' : 'Make Admin'}
+            </button>
+          </td>
+          <td>
+            <button className='btn btn-default' 
+                data-id={user._id} 
+                value={!user.contributor} 
+                onClick={this.handleContributorUpdate.bind(this)}>
+              {user.contributor ? 'Remove Contributor' : 'Make Contributor'}
+            </button>
+          </td>
+          <td></td>
         </tr>
       );
     });
 
     return (
       <div className='container'>
+        { this.state.successMessage 
+          ? (
+            <div className='row flipInX animated'>
+              <div className='col-sm-8'>
+                <div className='panel panel-default'>
+                  <div className='panel-heading'>{ this.state.successMessage }</div>
+                </div>
+              </div>
+            </div>
+            )
+          : ('')
+        }
         <div className='row flipInX animated'>
           <div className='col-sm-8'>
             { this.state.user && this.state.user.admin
@@ -61,16 +106,18 @@ class UserAdmin extends Component {
                     <thead>
                       <tr>
                         <th>List of Users</th>
-                        <th><Link to={'/admin/?start=' + 
-                            (this.state.start > 20 
-                              ? (parseInt(this.state.start) - 20)
+                        <th>Admin Access</th>
+                        <th>Contributor Access</th>
+                        <th><Link to={'/admin/?i=' + 
+                            (this.state.i > 20 
+                              ? (parseInt(this.state.i) - 20)
                               : 0)
                             }>&lt;&lt;</Link>
-                        </th>
-                        <th><Link to={'/admin/?start=' + 
-                            (this.state.start < (this.state.totalUsers - 20)
-                              ? (parseInt(this.state.start) + 20)
-                              : parseInt(this.state.start))
+                            &nbsp;&nbsp;
+                            <Link to={'/admin/?i=' + 
+                            (this.state.i < (this.state.totalUsers - 20)
+                              ? (parseInt(this.state.i) + 20)
+                              : parseInt(this.state.i))
                             }>&gt;&gt;</Link>
                         </th>
                       </tr>

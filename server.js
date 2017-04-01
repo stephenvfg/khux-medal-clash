@@ -70,19 +70,15 @@ passport.deserializeUser(function(id, done) {
 
 passport.use('login', new LocalStrategy({ passReqToCallback : true },
   function(req, username, password, done) { 
-
     User.findOne({ 'username' :  username }, 
       function(err, user) {
-
         if (err) return done(err);
-
         if (!user){
           return done(null, false, { message: 'User not found.' });   
         }
         if (!isValidPassword(user, password)){
           return done(null, false, { message: 'Invalid password.' });
         }
-
         return done(null, user);
       }
     );
@@ -90,31 +86,23 @@ passport.use('login', new LocalStrategy({ passReqToCallback : true },
 
 passport.use('signup', new LocalStrategy({ passReqToCallback : true },
   function(req, username, password, done) {
-
     findOrCreateUser = function(){
-
       User.findOne({ 'username': username },function(err, user) {
-
         if (err) return done(err);
-
         if (user) {
           return done(null, false, { message: 'User already exists' });
         } else {
           var newUser = new User();
-
           newUser.username = username;
           newUser.password = createHash(password);
           newUser.email = req.body.email;
- 
           newUser.save(function(err) {
             if (err) throw err;
-
             return done(null, newUser);
           });
         }
       });
     };
-     
     process.nextTick(findOrCreateUser);
   })
 );
@@ -175,8 +163,7 @@ app.get('/api/login', isAuthenticated, function(req, res, next) {
  */
 
 app.post('/api/login', passport.authenticate('login', {
-  successRedirect: '/api/login',
-  failureRedirect: '/login'
+  successRedirect: '/api/login'
 }));
 
 /**
@@ -185,9 +172,38 @@ app.post('/api/login', passport.authenticate('login', {
  */
 
 app.post('/api/signup', passport.authenticate('signup', {
-  successRedirect: '/api/login',
-  failureRedirect: '/signup'
+  successRedirect: '/api/login'
 }));
+
+/**
+ * GET /api/signup/username
+ * Returns true if user can sign up with the provided username
+ */
+
+app.get('/api/signup/username', function(req, res, next) {
+  var username = req.query.username;
+
+  User.findOne({ username: username }, function(err, user) {
+    if (err) return next(err);
+    if (user) { return res.status(200).send({ valid: false }); }
+    return res.status(200).send({ valid: true });
+  });
+});
+
+/**
+ * GET /api/signup/email
+ * Returns true if user can sign up with the provided email
+ */
+
+app.get('/api/signup/email', function(req, res, next) {
+  var email = req.query.email;
+
+  User.findOne({ email: email }, function(err, user) {
+    if (err) return next(err);
+    if (user) { return res.status(200).send({ valid: false }); }
+    return res.status(200).send({ valid: true });
+  });
+});
 
 /**
  * GET /api/signout
@@ -244,7 +260,8 @@ app.post('/api/forgot', function(req, res, next) {
           'If you did not request this, please ignore this email and your password will remain unchanged.\n'
       };
       smtpTransport.sendMail(mailOptions, function(err) {
-        res.send({ message: 'An e-mail has been sent to ' + user.email + ' with further instructions.' });
+        res.send({ message: 'An e-mail has been sent to ' + user.email + ' with further instructions. ' +
+          'Please check your spam folder if you can\'t find the email.' });
         done(err, 'done');
       });
     }
@@ -788,11 +805,12 @@ app.get('/api/stats', function(req, res, next) {
  */
 
 app.put('/api/user', isAuthenticated, function(req, res, next) {
-  var username = req.body.username;
-  var oldPassword = req.body.oldPassword;
-  var password = req.body.password;
-  var email = req.body.email;
-  var _id = req.body.id;
+
+  var username = req.body.username ? req.body.username : undefined;
+  var oldPassword = req.body.oldPassword ? req.body.oldPassword : undefined;
+  var password = req.body.password ? req.body.password : undefined;
+  var email = req.body.email ? req.body.email : undefined;
+  var _id = req.body.id ? req.body.id : undefined;
 
   if (!_id || !req.user._id || req.user._id != _id) {
     return res.status(400).send({ message: 'Must be logged in to update profile information.' });
@@ -996,6 +1014,56 @@ app.get('/api/users/count', isAuthenticatedAdmin, function(req, res, next) {
   User.count({}, function(err, count) {
     if (err) return next(err);
     res.send({ count: count });
+  });
+});
+
+/**
+ * PUT /api/user/admin
+ * Update user admin and contributor information. 
+ */
+
+app.put('/api/user/admin', isAuthenticatedAdmin, function(req, res, next) {
+
+  var contributor = req.body.contributor ? req.body.contributor : undefined;
+  var admin = req.body.admin ? req.body.admin : undefined;
+  var _id = req.body.id ? req.body.id : undefined;
+
+  var adminId = '58dc9e7045371246b4cd8d84';
+  var stephenId = '58dc9e7045371246b4cd8d84';
+
+  if (_id == adminId || _id == stephenId) {
+    return res.status(400).send({ message: 'Cannot change this user\'s permissions. Sorry!!! ;)' });
+  }
+
+  if (!_id) {
+    return res.status(400).send({ message: 'Must provide user id.' });
+  }
+
+  async.waterfall([
+    function(done) {
+      User.findOne({ _id: _id }, function(err, user) {
+        done(err, user);
+      });
+    },
+    function(user, done) {
+      if (!user) {
+        return res.status(404).send({ message: 'Could not find user account.' });
+      }
+
+      async.parallel([
+        function(callback) {
+          if (contributor) { user.contributor = contributor; }
+          if (admin) { user.admin = admin; }
+
+          user.save(function(err) {
+            if (err) return next(err)
+            res.status(200).send({ message: 'User information updated successfully.' });
+          })
+        }
+      ]);
+    }
+  ], function(err) {
+    if (err) return next(err);
   });
 });
 
