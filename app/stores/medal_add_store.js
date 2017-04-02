@@ -61,7 +61,7 @@ class MedalAddStore {
     this.helpBlock = errorMessage;
   }
 
-  onUploadSuccess(successMessage) { }
+  onUploadSuccess(successMessage) { /* do nothing */ }
 
   onUploadFail(errorMessage) { }
 

@@ -64,8 +64,8 @@ class MedalAddActions {
       .replace(/^-+/, '')
       .replace(/-+$/, '');
 
-    if (isGuilted) { slug += "-g"; }
-    if (isBoosted) { slug += "-b"; }
+    if (isGuilted) { slug += "-glt"; }
+    if (isBoosted) { slug += "-bst"; }
 
     $.ajax({
       type: 'POST',
