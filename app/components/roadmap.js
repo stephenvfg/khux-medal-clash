@@ -9,15 +9,17 @@ export default (props) => {
         <div className='col-xs-12 col-sm-4'>
           <h1>Launch checklist</h1>
           <ul>
-            <li>Terms of Service + any other legal shit</li>
+            <li>Clean up UI for contributor page</li>
+            <li>Add medals edit page</li>
+            <li>Add ability to edit medals from contributor page</li>
             <li>ssl and paid heroku dyno</li>
             <li>Add GA tracking links for all relevant links</li>
             <li>Replace success/fail messaging with proper toastr messaging (or other?)</li>
             <li>Add 2 second timer between votes to prevent vote spamming</li>
             <li>Ask to sign in / make user account after first 7 clicks</li>
-            <li>Contributor panel: ability to view medals you've added, edit medals</li>
             <li>Add all medals</li>
             <li>Add "help needed" section</li>
+            <li>Remove guilted medals?</li>
             <li>Review the if '(winner.voted || loser.voted) return res.status(200).end();' logic</li>
             <li>Add notice to top of screen about "You can play without registering BUT if you register you get to ...</li>
             <li>Add "HOW THIS WORKS" section... medals in system (boosted/guilted) --> vote --> generate stats --> vote more --> create geniune ranking list --> view other info</li>
@@ -55,6 +57,8 @@ export default (props) => {
         <div className='col-xs-12 col-sm-12'>
           <h1>Done</h1>
           <ul>
+            <li><del>Contributor panel: ability to view medals you've added, edit medals</del></li>
+            <li><del>Terms of Service + any other legal shit</del></li>
             <li><del>Error message for email or username that's already taken ON SIGN UP</del></li>
             <li><del>Format the login dropdown</del></li>
             <li><del>Validation for the login dropdown</del></li>

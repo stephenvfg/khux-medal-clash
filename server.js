@@ -661,6 +661,23 @@ app.get('/api/medals/vote/:id', function(req, res, next) {
 });
 
 /**
+ * GET /api/medals/user/:id
+ * Returns all medals uploaded by the specified user ID.
+ */
+
+app.get('/api/medals/user/:id', function(req, res, next) {
+  var user = req.params.id;
+  Medal
+    .find()
+    .where('addedBy', user)
+    .sort({'name':-1})
+    .exec(function(err, medals) {
+      if (err) return next(err);
+      res.send(medals);
+    });
+});
+
+/**
  * GET /api/votes
  * Returns 100 most recent votes.
  */

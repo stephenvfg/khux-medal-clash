@@ -9,8 +9,10 @@ import MedalVotes from './components/medal_votes';
 import MedalList from './components/medal_list';
 import Stats from './components/stats';
 import Roadmap from './components/roadmap';
+import TOS from './components/tos';
 import User from './components/user';
 import UserAdmin from './components/user_admin';
+import UserContributor from './components/user_contributor';
 import UserReset from './components/user_reset';
 import NotFound from './components/not_found';
 
@@ -22,8 +24,10 @@ export default (
     <Route path='/stats' component={Stats} />
     <Route path='/votes' component={MedalVotes} />
     <Route path='/roadmap' component={Roadmap} />
+    <Route path='/tos' component={TOS} />
     <Route path='/profile' component={User} />
     <Route path='/admin' component={UserAdmin} />
+    <Route path='/contributor' component={UserContributor} />
     <Route path='/reset/:token' component={UserReset} />
     <Route path='/medals/:category' component={MedalList}>
       <Route path=':attribute' component={MedalList}>
