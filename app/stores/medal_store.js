@@ -20,7 +20,6 @@ class MedalStore {
     this.medal = data;
     MedalActions.getVariants(this.medal.no);
     $(document.body).attr('class', 'profile-' + this.medal.affinity + '-' + this.medal.attribute);
-    // If is NaN (from division by zero) then set it to "0"
     this.winLossRatio = ((this.medal.wins / (this.medal.wins + this.medal.losses) * 100) || 0).toFixed(1);
   }
 

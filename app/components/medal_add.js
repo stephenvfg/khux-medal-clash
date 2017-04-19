@@ -25,15 +25,12 @@ class MedalAdd extends Component {
 
   handleUpload(event) {
     event.preventDefault();
-
     let reader = new FileReader();
     let file = event.target.files[0];
-
     reader.onloadend = () => {
       MedalAddActions.updateFile(file);
       MedalAddActions.updateImagePreviewUrl(reader.result);
     }
-
     reader.readAsDataURL(file);
   }
 
@@ -41,7 +38,6 @@ class MedalAdd extends Component {
     event.preventDefault();
 
     var file = this.state.file;
-
     var user = this.state.user;
 
     var name = this.state.name.trim();
@@ -64,7 +60,6 @@ class MedalAdd extends Component {
 
     if (!name) {
       MedalAddActions.invalidName();
-      this.refs.nameTextField.focus();
       valid = false;
     }
 
@@ -136,8 +131,8 @@ class MedalAdd extends Component {
     }
 
     if (valid) {
-
       MedalAddActions.upload(file);
+
       MedalAddActions.addMedal(name, no, file.name, affinity, attribute, baseStr, baseDef, spAtk, spDesc, 
           target, tier, mult, gauges, false, false, 0, 0, user._id);
       MedalAddActions.addMedal(name + ' (Guilted)', no, file.name, affinity, attribute, baseStr, baseDef, spAtk, spDesc, 
@@ -149,6 +144,8 @@ class MedalAdd extends Component {
         MedalAddActions.addMedal(name + ' (Boosted) (Guilted)', no, file.name, affinity, attribute, baseStr, baseDef, spAtk, spDesc, 
             target, tier, mult, gauges, true, true, strBoost, defBoost, user._id);
       }
+    } else {
+      toastr.error('Please fill out all fields.');
     }
   }
 
@@ -177,7 +174,6 @@ class MedalAdd extends Component {
                           <label className='control-label'>Medal Name</label>
                           <input type='text' className='form-control' ref='nameTextField' value={this.state.name}
                                  onChange={MedalAddActions.updateName} autoFocus/>
-                          <span className='help-block'>{this.state.helpBlock}</span>
                         </div>
                       </div>
                       <div className='col-sm-4'>
@@ -289,20 +285,25 @@ class MedalAdd extends Component {
                           <label htmlFor='isBoosted'>&nbsp; Medal is Boosted</label>
                         </div>
                       </div>
-                      <div className='col-sm-4'>
-                        <div className={'form-group ' + this.state.strBoostValidationState}>
-                          <label className='control-label'>Strength Boost</label>
-                          <input type='text' className='form-control' ref='strBoostTextField' value={this.state.strBoost}
-                                 onChange={MedalAddActions.updateStrBoost} autoFocus/>
-                        </div>
-                      </div>
-                      <div className='col-sm-4'>
-                        <div className={'form-group ' + this.state.defBoostValidationState}>
-                          <label className='control-label'>Defense Boost</label>
-                          <input type='text' className='form-control' ref='defBoostTextField' value={this.state.defBoost}
-                                 onChange={MedalAddActions.updateDefBoost} autoFocus/>
-                        </div>
-                      </div>
+                      { this.state.isBoosted
+                        ? (
+                          <div>
+                            <div className='col-sm-4'>
+                              <div className={'form-group ' + this.state.strBoostValidationState}>
+                                <label className='control-label'>Strength Boost</label>
+                                <input type='text' className='form-control' ref='strBoostTextField' value={this.state.strBoost}
+                                       onChange={MedalAddActions.updateStrBoost} autoFocus/>
+                              </div>
+                            </div>
+                            <div className='col-sm-4'>
+                              <div className={'form-group ' + this.state.defBoostValidationState}>
+                                <label className='control-label'>Defense Boost</label>
+                                <input type='text' className='form-control' ref='defBoostTextField' value={this.state.defBoost}
+                                       onChange={MedalAddActions.updateDefBoost} autoFocus/>
+                              </div>
+                            </div>
+                          </div>
+                        ) : '' }
                       <button type='submit' className='btn btn-primary'>Submit</button>
                     </form>
                   </div>
@@ -315,8 +316,30 @@ class MedalAdd extends Component {
               ) 
             }
           </div>
-          <div className='col-sm-4'>
-            { $imagePreview }
+          <div className='col-sm-4 flipInX animated'>
+            <div className='panel panel-default'>
+              <div className='panel-heading'>Info</div>
+              <div className='panel-body'>
+                <p>This form will add multiple variations of the same medal:</p>
+                <ul>
+                  <li><strong>Base version</strong> of the medal (no guilt or boost)</li>
+                  <li><strong>Guilted version</strong> of the medal (special attack bonus unlocked)</li>
+                </ul>
+                <p>If this medal comes with a boosted version then two more variations will be added:</p>
+                <ul>
+                  <li><strong>Boosted version</strong> of the medal</li>
+                  <li><strong>Guilted version of the boosted medal</strong></li>
+                </ul>
+              </div>
+            </div>
+            { $imagePreview ? (
+              <div className='panel panel-default'>
+                <div className='panel-heading'>Medal Preview</div>
+                <div className='panel-body'>
+                  { $imagePreview }
+                </div>
+              </div>
+            ) : '' }
           </div>
         </div>
       </div>

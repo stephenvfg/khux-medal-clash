@@ -85,18 +85,6 @@ class UserAdmin extends Component {
 
     return (
       <div className='container'>
-        { this.state.successMessage 
-          ? (
-            <div className='row flipInX animated'>
-              <div className='col-sm-8'>
-                <div className='panel panel-default'>
-                  <div className='panel-heading'>{ this.state.successMessage }</div>
-                </div>
-              </div>
-            </div>
-            )
-          : ('')
-        }
         <div className='row flipInX animated'>
           <div className='col-sm-8'>
             { this.state.user && this.state.user.admin

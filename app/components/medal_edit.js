@@ -52,7 +52,6 @@ class MedalEdit extends Component {
 
     if (!name) {
       MedalEditActions.invalidName();
-      this.refs.nameTextField.focus();
       valid = false;
     }
 
@@ -126,6 +125,8 @@ class MedalEdit extends Component {
     if (valid) {
       MedalEditActions.editMedal(id, name, no, affinity, attribute, baseStr, baseDef, spAtk, spDesc, 
           target, tier, mult, gauges, strBoost, defBoost);
+    } else {
+      toastr.error('Please fill out all fields.');
     }
   }
 
@@ -154,7 +155,6 @@ class MedalEdit extends Component {
                           <label className='control-label'>Medal Name</label>
                           <input type='text' className='form-control' ref='nameTextField' value={this.state.name}
                                  onChange={MedalEditActions.updateName} autoFocus/>
-                          <span className='help-block'>{this.state.helpBlock}</span>
                         </div>
                       </div>
                       <div className='col-sm-4'>

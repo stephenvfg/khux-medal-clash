@@ -9,8 +9,6 @@ class UserAdminStore {
     this.users = [];
     this.i = 0;
 
-    this.successMessage = '';
-
     this.user = '';
   }
 
@@ -32,7 +30,6 @@ class UserAdminStore {
 
   onUpdateIndex(i) {
     this.i = i;
-    this.successMessage = '';
     UserAdminActions.getUsers(this.i);
   }
 
@@ -45,7 +42,7 @@ class UserAdminStore {
   }
 
   onUpdateContributorSuccess(message) {
-    this.successMessage = message;
+    toastr.success(message);
   }
 
   onUpdateContributorFail(jqXhr) {
@@ -53,7 +50,7 @@ class UserAdminStore {
   }
 
   onUpdateAdminSuccess(message) {
-    this.successMessage = message;
+    toastr.success(message);
   }
 
   onUpdateAdminFail(jqXhr) {

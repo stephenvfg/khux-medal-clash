@@ -9,19 +9,20 @@ export default (props) => {
         <div className='col-xs-12 col-sm-4'>
           <h1>Launch checklist</h1>
           <ul>
+            <li>Add personal votes history page</li>
+            <li>Add ability to undo vote</li>
             <li>ssl and paid heroku dyno</li>
-            <li>Replace success/fail messaging with proper toastr messaging (or other?)</li>
-            <li>Ask to sign in / make user account after first 7 clicks</li>
+            <li>Ask to sign in / make user account after first 7 clicks: "You can play without registering BUT if you register you get to ..."</li>
             <li>Add all medals</li>
-            <li>Add "help needed" section</li>
             <li>Review the if '(winner.voted || loser.voted) return res.status(200).end();' logic</li>
-            <li>Add notice to top of screen about "You can play without registering BUT if you register you get to ...</li>
+            <li>Review medal retrieval logic so that the 'newest' medals get a lot of votes to catch up</li>
             <li>Add "HOW THIS WORKS" section... medals in system (boosted/guilted) --> vote --> generate stats --> vote more --> create geniune ranking list --> view other info</li>
           </ul>
         </div>
         <div className='col-xs-12 col-sm-4'>
           <h1>Upcoming Features</h1>
           <ul>
+            <li>Add "help needed" section</li>
             <li>Externalize strings into separate file for internationalization</li>
             <li>Add pagination to the medal listing pages</li>
             <li>Add pagination for votes history for each medal</li>
@@ -38,6 +39,8 @@ export default (props) => {
             <li>Place a small advertisement square on the page</li>
             <li>Improve password reset experience (emails, messages)</li>
             <li>Automatically log in once password is reset</li>
+            <li>More email notifications about things?</li>
+            <li>Prettier emails</li>
           </ul>
         </div>
         <div className='col-xs-12 col-sm-4'>
@@ -51,12 +54,14 @@ export default (props) => {
             <li>Guilt icon flickers when I click on medal</li>
             <li>No file type validation on the server side</li>
             <li>No number validation on "add" form</li>
+            <li>On medal add form, if I check then uncheck 'isBoosted', the boost fields stay visible.</li>
             <li><del>On admin page when not logged in as admin: Uncaught TypeError: this.state.users.map is not a function</del></li>
           </ul>
         </div>
         <div className='col-xs-12 col-sm-12'>
           <h1>Done</h1>
           <ul>
+            <li><del>Replace success/fail messaging with proper toastr messaging (or other?)</del></li>
             <li><del>Add medals edit page</del></li>
             <li><del>Add links to guilted/booted versions of medals to medal info page</del></li>
             <li><del>Add mixpanel tracking links for all relevant links</del></li>

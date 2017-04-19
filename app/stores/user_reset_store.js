@@ -11,7 +11,6 @@ class UserResetStore {
     this.passwordValidationState = '';
     this.password2ValidationState = '';
 
-    this.successMessage = '';
     this.token = '';
 
     this.user = '';
@@ -26,7 +25,7 @@ class UserResetStore {
   }
 
   onResetSuccess(message) {
-    this.successMessage = message;
+    toastr.success(message);
   }
 
   onResetFail(jqXhr) {

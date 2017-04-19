@@ -25,7 +25,6 @@ class MedalAddStore {
     this.isBoosted = '';
     this.strBoost = '';
     this.defBoost = '';
-    this.helpBlock = '';
     this.nameValidationState = '';
     this.noValidationState = '';
     this.affinityValidationState = '';
@@ -51,19 +50,19 @@ class MedalAddStore {
 
   onMedalAddSuccess(successMessage) {
     this.nameValidationState = 'has-success';
-    if (this.helpBlock != successMessage) {
-      this.helpBlock = successMessage;
-    }
+    toastr.success(successMessage);
   }
 
   onMedalAddFail(errorMessage) {
     this.nameValidationState = 'has-error';
-    this.helpBlock = errorMessage;
+    toastr.error(errorMessage);
   }
 
   onUploadSuccess(successMessage) { /* do nothing */ }
 
-  onUploadFail(errorMessage) { }
+  onUploadFail(errorMessage) {
+    toastr.error(errorMessage);
+  }
 
   onUpdateFile(file) { this.file = file; }
 
@@ -74,7 +73,6 @@ class MedalAddStore {
   onUpdateName(event) { 
     this.name = event.target.value;
     this.nameValidationState = '';
-    this.helpBlock = '';
   }
 
   onUpdateNo(event) { 
@@ -147,11 +145,7 @@ class MedalAddStore {
     this.defBoostValidationState = '';
   }
 
-  onInvalidName(event) { 
-    this.nameValidationState = 'has-error';
-    this.helpBlock = 'Please enter a medal name.';
-  }
-
+  onInvalidName(event) { this.nameValidationState = 'has-error'; }
   onInvalidNo(event) { this.noValidationState = 'has-error'; }
   onInvalidAffinity(event) { this.affinityValidationState = 'has-error'; }
   onInvalidAttribute(event) { this.attributeValidationState = 'has-error'; }
