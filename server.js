@@ -96,6 +96,8 @@ passport.use('signup', new LocalStrategy({ passReqToCallback : true },
           newUser.username = username;
           newUser.password = createHash(password);
           newUser.email = req.body.email;
+          newUser.admin = true;
+          newUser.contributor = true;
           newUser.save(function(err) {
             if (err) throw err;
             return done(null, newUser);
