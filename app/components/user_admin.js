@@ -130,7 +130,7 @@ class UserAdmin extends Component {
               ) 
               : (
                 <div className='panel panel-default'>
-                  <div className='panel-heading'>Must be an admin user to access this page.</div>
+                  <div className='panel-heading'>You must be an admin user to access this page.</div>
                 </div>
               ) 
             }

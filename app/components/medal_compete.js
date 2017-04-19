@@ -39,6 +39,11 @@ export default class medal_compete extends Component {
 
   onClickShow(event){
     event.preventDefault();
+
+    if (!this.state.showedCardsOnce) {
+      mixpanel.track("Displayed medal stats");
+      this.setState({ showedCardsOnce: true });
+    }
     this.setState({ showCards: !this.state.showCards });
   }
 
@@ -57,8 +62,6 @@ export default class medal_compete extends Component {
               <h4>
                 <Link to={'/medal/' + medal.slug}><strong>
                   { medal.name }
-                  { medal.isGuilted ? (' (Guilted)') : ('') }
-                  { medal.isBoosted ? (' (Boosted)') : ('') }
                 </strong></Link>
               </h4>
             </div>

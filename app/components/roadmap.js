@@ -9,17 +9,11 @@ export default (props) => {
         <div className='col-xs-12 col-sm-4'>
           <h1>Launch checklist</h1>
           <ul>
-            <li>Clean up UI for contributor page</li>
-            <li>Add medals edit page</li>
-            <li>Add ability to edit medals from contributor page</li>
             <li>ssl and paid heroku dyno</li>
-            <li>Add GA tracking links for all relevant links</li>
             <li>Replace success/fail messaging with proper toastr messaging (or other?)</li>
-            <li>Add 2 second timer between votes to prevent vote spamming</li>
             <li>Ask to sign in / make user account after first 7 clicks</li>
             <li>Add all medals</li>
             <li>Add "help needed" section</li>
-            <li>Remove guilted medals?</li>
             <li>Review the if '(winner.voted || loser.voted) return res.status(200).end();' logic</li>
             <li>Add notice to top of screen about "You can play without registering BUT if you register you get to ...</li>
             <li>Add "HOW THIS WORKS" section... medals in system (boosted/guilted) --> vote --> generate stats --> vote more --> create geniune ranking list --> view other info</li>
@@ -28,6 +22,9 @@ export default (props) => {
         <div className='col-xs-12 col-sm-4'>
           <h1>Upcoming Features</h1>
           <ul>
+            <li>Externalize strings into separate file for internationalization</li>
+            <li>Add pagination to the medal listing pages</li>
+            <li>Add pagination for votes history for each medal</li>
             <li>Add ability to compare two specific medals</li>
             <li>Format "add medal" form</li>
             <li>List/stream of recent votes</li>
@@ -46,6 +43,9 @@ export default (props) => {
         <div className='col-xs-12 col-sm-4'>
           <h1>Bug Fixes</h1>
           <ul>
+            <li>So many validation issues with adding and editing medals... regarding the name of the medal, whether or not it has guilted/boosted, and also the slug being unique</li>
+            <li>If I deactivate a medal, the votes history for other medals including that medal show up as 'Loading...' with an error message. See api/medals/vote/:id</li>
+            <li>Search doesn't work when searching for guilted or boosted medals</li>
             <li><del>When I click "isBoosted", I cannot un-check it</del></li>
             <li>When I hover over a Boosted sign, I cannot click on the medal itself</li>
             <li>Guilt icon flickers when I click on medal</li>
@@ -57,6 +57,10 @@ export default (props) => {
         <div className='col-xs-12 col-sm-12'>
           <h1>Done</h1>
           <ul>
+            <li><del>Add medals edit page</del></li>
+            <li><del>Add links to guilted/booted versions of medals to medal info page</del></li>
+            <li><del>Add mixpanel tracking links for all relevant links</del></li>
+            <li><del>Clean up UI for contributor page</del></li>
             <li><del>Contributor panel: ability to view medals you've added, edit medals</del></li>
             <li><del>Terms of Service + any other legal shit</del></li>
             <li><del>Error message for email or username that's already taken ON SIGN UP</del></li>

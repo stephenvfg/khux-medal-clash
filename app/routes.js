@@ -4,6 +4,7 @@ import { Route, IndexRoute, Redirect } from 'react-router';
 import App from './components/app';
 import MedalCompete from './components/medal_compete';
 import MedalAdd from './components/medal_add';
+import MedalEdit from './components/medal_edit';
 import Medal from './components/medal';
 import MedalVotes from './components/medal_votes';
 import MedalList from './components/medal_list';
@@ -20,6 +21,7 @@ export default (
   <Route path='/' component={App}>
     <IndexRoute component={MedalCompete} />
     <Route path='/add' component={MedalAdd} />
+    <Route path='/edit/:slug' component={MedalEdit} />
     <Route path='/medal/:slug' component={Medal} />
     <Route path='/stats' component={Stats} />
     <Route path='/votes' component={MedalVotes} />

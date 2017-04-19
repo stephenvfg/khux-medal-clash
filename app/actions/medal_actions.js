@@ -4,7 +4,9 @@ class MedalActions {
   constructor() {
     this.generateActions(
       'getMedalSuccess',
-      'getMedalFail'
+      'getMedalFail',
+      'getVariantsSuccess',
+      'getVariantsFail'
     );
   }
 
@@ -15,6 +17,16 @@ class MedalActions {
       })
       .fail((jqXhr) => {
         this.actions.getMedalFail(jqXhr);
+      });
+  }
+
+  getVariants(no) {
+    $.ajax({ url: '/api/medals/no/' + no })
+      .done((data) => {
+        this.actions.getVariantsSuccess(data);
+      })
+      .fail((jqXhr) => {
+        this.actions.getVariantsFail(jqXhr);
       });
   }
 }

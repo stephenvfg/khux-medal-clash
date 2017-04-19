@@ -348,6 +348,7 @@ app.get('/api/reset/:token', function(req, res) {
 app.get('/api/medals', function(req, res, next) {
 
   Medal.find({ random: { $near: [Math.random(), 0] } })
+    .where('_active', true)
     .where('voted', false)
     .limit(2)
     .exec(function(err, medals) {
@@ -360,6 +361,7 @@ app.get('/api/medals', function(req, res, next) {
       Medal.update({}, { $set: { voted: false } }, { multi: true }, function(err) {
         
         Medal.find({ random: { $near: [Math.random(), 0] } })
+          .where('_active', true)
           .where('voted', false)
           .limit(2)
           .exec(function(err, medals) {
@@ -503,7 +505,7 @@ app.put('/api/medals', function(req, res, next) {
  */
 
 app.get('/api/medals/count', function(req, res, next) {
-  Medal.count({}, function(err, count) {
+  Medal.count({ _active: true }, function(err, count) {
     if (err) return next(err);
     res.send({ count: count });
   });
@@ -517,14 +519,11 @@ app.get('/api/medals/count', function(req, res, next) {
 app.get('/api/medals/search', function(req, res, next) {
   var medalName = new RegExp(req.query.name, 'i');
 
-  Medal.findOne({ name: medalName }, function(err, medal) {
-
+  Medal.findOne({ name: medalName, _active: true, isGuilted: false, isBoosted: false }, function(err, medal) {
     if (err) return next(err);
-
     if (!medal) {
       return res.status(404).send({ message: 'Medal not found.' });
     }
-
     res.send(medal);
   });
 });
@@ -544,6 +543,7 @@ app.get('/api/medals/top', function(req, res, next) {
 
   Medal
     .find(conditions)
+    .where('_active', true)
     .sort({'ratio':-1, 'wins':-1})
     .limit(100)
     .exec(function(err, medals) {
@@ -560,49 +560,12 @@ app.get('/api/medals/top', function(req, res, next) {
 app.get('/api/medals/shame', function(req, res, next) {
   Medal
     .find()
+    .where('_active', true)
     .sort({'ratio':1, 'losses':-1})
     .limit(100)
     .exec(function(err, medals) {
       if (err) return next(err);
       res.send(medals);
-    });
-});
-
-/**
- * GET /api/medals/:id
- * Returns detailed medal information by ID.
- */
-
-app.get('/api/medals/:id', function(req, res, next) {
-  var id = req.params.id;
-
-  Medal.findOne({ _id: id }, function(err, medal) {
-    if (err) return next(err);
-
-    if (!medal) {
-      return res.status(404).send({ message: 'Medal not found.' });
-    }
-
-    res.send(medal);
-  });
-});
-
-/**
- * GET /api/medal/:id/votes
- * Returns 10 most recent votes tied to the medal.
- */
-
-app.get('/api/medals/:id/votes', function(req, res, next) {
-  var id = req.params.id;
-
-  Vote
-    .find({ "$or": [{ winner: id }, { loser: id }] })
-    .sort('-date') // Sort in descending order (newest on top)
-    .limit(10)
-    .exec(function(err, votes) {
-      if (err) return next(err);
-
-      res.send(votes);
     });
 });
 
@@ -614,15 +577,30 @@ app.get('/api/medals/:id/votes', function(req, res, next) {
 app.get('/api/medals/slug/:slug', function(req, res, next) {
   var slug = req.params.slug;
 
-  Medal.findOne({ slug: slug }, function(err, medal) {
+  Medal.findOne({ slug: slug, _active: true }, function(err, medal) {
     if (err) return next(err);
-
     if (!medal) {
       return res.status(404).send({ message: 'Medal not found.' });
     }
-
     res.send(medal);
   });
+});
+
+/**
+ * GET /api/medals/no/:no
+ * Returns medals based on the medal number.
+ */
+
+app.get('/api/medals/no/:no', function(req, res, next) {
+  var no = req.params.no;
+
+  Medal
+    .find({ no: no })
+    .where('_active', true)
+    .exec(function(err, medals) {
+      if (err) return next(err);
+      res.send(medals);
+    });
 });
 
 /**
@@ -635,21 +613,18 @@ app.get('/api/medals/vote/:id', function(req, res, next) {
 
   Vote.findOne({ _id: id }, function(err, vote) {
     if (err) return next(err);
-
     if (!vote) {
       return res.status(404).send({ message: 'Vote not found.' });
     }
 
-    Medal.findOne({ _id: vote.winner }, function(err, medalW) {
+    Medal.findOne({ _id: vote.winner, _active: true }, function(err, medalW) {
       if (err) return next(err);
-
       if (!medalW) {
         return res.status(404).send({ message: 'Winner medal not found.' });
       }
 
-      Medal.findOne({ _id: vote.loser }, function(err, medalL) {
+      Medal.findOne({ _id: vote.loser, _active: true }, function(err, medalL) {
         if (err) return next(err);
-
         if (!medalL) {
           return res.status(404).send({ message: 'Loser medal not found.' });
         }
@@ -678,6 +653,41 @@ app.get('/api/medals/user/:id', function(req, res, next) {
 });
 
 /**
+ * GET /api/medals/:id
+ * Returns detailed medal information by ID.
+ */
+
+app.get('/api/medals/:id', function(req, res, next) {
+  var id = req.params.id;
+
+  Medal.findOne({ _id: id, _active: true }, function(err, medal) {
+    if (err) return next(err);
+    if (!medal) {
+      return res.status(404).send({ message: 'Medal not found.' });
+    }
+    res.send(medal);
+  });
+});
+
+/**
+ * GET /api/medal/:id/votes
+ * Returns 10 most recent votes tied to the medal.
+ */
+
+app.get('/api/medals/:id/votes', function(req, res, next) {
+  var id = req.params.id;
+
+  Vote
+    .find({ "$or": [{ winner: id }, { loser: id }] })
+    .sort('-date') // Sort in descending order (newest on top)
+    .limit(10)
+    .exec(function(err, votes) {
+      if (err) return next(err);
+      res.send(votes);
+    });
+});
+
+/**
  * GET /api/votes
  * Returns 100 most recent votes.
  */
@@ -690,7 +700,6 @@ app.get('/api/votes', function(req, res, next) {
     .limit(100)
     .exec(function(err, votes) {
       if (err) return next(err);
-
       res.send(votes);
     });
 });
@@ -709,7 +718,6 @@ app.get('/api/votes/medal/:id', function(req, res, next) {
     .limit(10)
     .exec(function(err, votes) {
       if (err) return next(err);
-
       res.send(votes);
     });
 });
@@ -722,32 +730,32 @@ app.get('/api/votes/medal/:id', function(req, res, next) {
 app.get('/api/stats', function(req, res, next) {
   async.parallel([
       function(callback) {
-        Medal.count({}, function(err, count) {
+        Medal.count({ _active: true }, function(err, count) {
           callback(err, count);
         });
       },
       function(callback) {
-        Medal.count({ affinity: 'upright' }, function(err, uprightCount) {
+        Medal.count({ affinity: 'upright', _active: true }, function(err, uprightCount) {
           callback(err, uprightCount);
         });
       },
       function(callback) {
-        Medal.count({ affinity: 'reversed' }, function(err, reversedCount) {
+        Medal.count({ affinity: 'reversed', _active: true }, function(err, reversedCount) {
           callback(err, reversedCount);
         });
       },
       function(callback) {
-        Medal.count({ attribute: 'power' }, function(err, powerCount) {
+        Medal.count({ attribute: 'power', _active: true }, function(err, powerCount) {
           callback(err, powerCount);
         });
       },
       function(callback) {
-        Medal.count({ attribute: 'speed' }, function(err, speedCount) {
+        Medal.count({ attribute: 'speed', _active: true }, function(err, speedCount) {
           callback(err, speedCount);
         });
       },
       function(callback) {
-        Medal.count({ attribute: 'magic' }, function(err, magicCount) {
+        Medal.count({ attribute: 'magic', _active: true }, function(err, magicCount) {
           callback(err, magicCount);
         });
       },
@@ -761,6 +769,7 @@ app.get('/api/stats', function(req, res, next) {
       function(callback) {
         Medal
           .find()
+          .where('_active', true)
           .sort({'ratio':-1})
           .limit(100)
           .select('affinity')
@@ -779,6 +788,7 @@ app.get('/api/stats', function(req, res, next) {
       function(callback) {
         Medal
           .find()
+          .where('_active', true)
           .sort({'ratio':-1})
           .limit(100)
           .select('attribute')
@@ -996,6 +1006,83 @@ app.post('/api/medals', isAuthenticatedContributor, function(req, res, next) {
       res.send({ message: name + ' has been added successfully!' });
     }
   ]);
+});
+
+/**
+ * PUT /api/medals/:id
+ * Update medal information. 
+ */
+
+app.put('/api/medals/:id', isAuthenticatedContributor, function(req, res, next) {
+
+  var _id = req.params.id;
+
+  var name = req.body.name ? req.body.name : undefined;
+  var slug = req.body.slug ? req.body.slug : undefined;
+  var no = req.body.no ? req.body.no : undefined;
+  var imgPath = req.body.imgPath ? req.body.imgPath : undefined;
+  var affinity = req.body.affinity ? req.body.affinity : undefined;
+  var attribute = req.body.attribute ? req.body.attribute : undefined;
+  var baseStr = req.body.baseStr ? req.body.baseStr : undefined;
+  var baseDef = req.body.baseDef ? req.body.baseDef : undefined;
+  var spAtk = req.body.spAtk ? req.body.spAtk : undefined;
+  var spDesc = req.body.spDesc ? req.body.spDesc : undefined;
+  var target = req.body.target ? req.body.target : undefined;
+  var tier = req.body.tier ? req.body.tier : undefined;
+  var mult = req.body.mult ? req.body.mult : undefined;
+  var gauges = req.body.gauges ? req.body.gauges : undefined;
+  var strBoost = req.body.strBoost ? req.body.strBoost : undefined;
+  var defBoost = req.body.defBoost ? req.body.defBoost : undefined;
+
+  var _active = req.body.active ? req.body.active : undefined;
+
+  if (!_id) {
+    return res.status(400).send({ message: 'Must provide medal id.' });
+  }
+
+  async.waterfall([
+    function(done) {
+      Medal.findOne({ _id: _id }, function(err, medal) {
+        done(err, medal);
+      });
+    },
+    function(medal, done) {
+      if (!medal) {
+        return res.status(404).send({ message: 'Could not find medal.' });
+      }
+
+      async.parallel([
+        function(callback) {
+
+          if (name) { medal.name = name; }
+          if (slug) { medal.slug = slug; }
+          if (no) { medal.no = no; }
+          if (imgPath) { medal.imgPath = imgPath; }
+          if (affinity) { medal.affinity = affinity; }
+          if (attribute) { medal.attribute = attribute; }
+          if (baseStr) { medal.baseStr = baseStr; }
+          if (baseDef) { medal.baseDef = baseDef; }
+          if (spAtk) { medal.spAtk = spAtk; }
+          if (spDesc) { medal.spDesc = spDesc; }
+          if (target) { medal.target = target; }
+          if (tier) { medal.tier = tier; }
+          if (mult) { medal.mult = mult; }
+          if (gauges) { medal.gauges = gauges; }
+          if (strBoost) { medal.strBoost = strBoost; }
+          if (defBoost) { medal.defBoost = defBoost; }
+
+          if (_active) { medal._active = _active; }
+
+          medal.save(function(err) {
+            if (err) return next(err)
+            res.status(200).send({ message: 'Medal information updated successfully.' });
+          })
+        }
+      ]);
+    }
+  ], function(err) {
+    if (err) return next(err);
+  });
 });
 
 /////////////////////////////////////////////////////////

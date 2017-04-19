@@ -7,7 +7,9 @@ class UserContributorActions {
       'loggedInSuccess',
       'loggedInFail',
       'getMedalsSuccess',
-      'getMedalsFail'
+      'getMedalsFail',
+      'activateMedalSuccess',
+      'activateMedalFail'
     );
   }
 
@@ -32,6 +34,20 @@ class UserContributorActions {
         this.actions.getMedalsFail(jqXhr);
       }
     );
+  }
+
+  activateMedal(id, active) {
+    $.ajax({
+      type: 'PUT',
+      url: '/api/medals/' + id,
+      data: { active: active }
+    })
+      .done((data) => {
+        this.actions.activateMedalSuccess(data.message);
+      })
+      .fail((jqXhr) => {
+        this.actions.activateMedalFail(jqXhr);
+      });
   }
 }
 

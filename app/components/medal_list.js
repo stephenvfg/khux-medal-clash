@@ -49,8 +49,6 @@ export default class MedalList extends Component {
               <h4 className='media-heading'>
                 <strong><Link to={'/medal/' + medal.slug}>
                   { medal.name }
-                  { medal.isGuilted ? (' (Guilted)') : ('') }
-                  { medal.isBoosted ? (' (Boosted)') : ('') }
                 </Link></strong>
               </h4>
               <h4>Wins: <strong>{medal.wins}</strong></h4>

@@ -1,40 +1,27 @@
 import React, { Component } from 'react';
-import MedalAddStore from '../stores/medal_add_store';
-import MedalAddActions from '../actions/medal_add_actions';
+import MedalEditStore from '../stores/medal_edit_store';
+import MedalEditActions from '../actions/medal_edit_actions';
 
-class MedalAdd extends Component {
+class MedalEdit extends Component {
   constructor(props) {
     super(props);
-    this.state = MedalAddStore.getState();
+    this.state = MedalEditStore.getState();
     this.onChange = this.onChange.bind(this);
   }
 
   componentDidMount() {
-    MedalAddStore.listen(this.onChange);
+    MedalEditStore.listen(this.onChange);
 
-    MedalAddActions.loggedIn();
+    MedalEditActions.loggedIn();
+    MedalEditActions.getMedal(this.props.params.slug);
   }
 
   componentWillUnmount() {
-    MedalAddStore.unlisten(this.onChange);
+    MedalEditStore.unlisten(this.onChange);
   }
 
   onChange(state) {
     this.setState(state);
-  }
-
-  handleUpload(event) {
-    event.preventDefault();
-
-    let reader = new FileReader();
-    let file = event.target.files[0];
-
-    reader.onloadend = () => {
-      MedalAddActions.updateFile(file);
-      MedalAddActions.updateImagePreviewUrl(reader.result);
-    }
-
-    reader.readAsDataURL(file);
   }
 
   handleSubmit(event) {
@@ -43,6 +30,7 @@ class MedalAdd extends Component {
     var file = this.state.file;
 
     var user = this.state.user;
+    var id = this.state.id;
 
     var name = this.state.name.trim();
     var no = this.state.no;
@@ -63,98 +51,87 @@ class MedalAdd extends Component {
     var valid = true;
 
     if (!name) {
-      MedalAddActions.invalidName();
+      MedalEditActions.invalidName();
       this.refs.nameTextField.focus();
       valid = false;
     }
 
     if (!no) {
-      MedalAddActions.invalidNo();
+      MedalEditActions.invalidNo();
       valid = false;
     }
 
     if (!affinity) {
-      MedalAddActions.invalidAffinity();
+      MedalEditActions.invalidAffinity();
       valid = false;
     }
 
     if (!attribute) {
-      MedalAddActions.invalidAttribute();
+      MedalEditActions.invalidAttribute();
       valid = false;
     }
 
     if (!baseStr) {
-      MedalAddActions.invalidBaseStr();
+      MedalEditActions.invalidBaseStr();
       valid = false;
     }
 
     if (!baseDef) {
-      MedalAddActions.invalidBaseDef();
+      MedalEditActions.invalidBaseDef();
       valid = false;
     }
 
     if (!spAtk) {
-      MedalAddActions.invalidSpAtk();
+      MedalEditActions.invalidSpAtk();
       valid = false;
     }
 
     if (!spDesc) {
-      MedalAddActions.invalidSpDesc();
+      MedalEditActions.invalidSpDesc();
       valid = false;
     }
 
     if (!target) {
-      MedalAddActions.invalidTarget();
+      MedalEditActions.invalidTarget();
       valid = false;
     }
 
     if (!tier) {
-      MedalAddActions.invalidTier();
+      MedalEditActions.invalidTier();
       valid = false;
     }
 
     if (!mult) {
-      MedalAddActions.invalidMult();
+      MedalEditActions.invalidMult();
       valid = false;
     }
 
     if (!gauges) {
-      MedalAddActions.invalidGauges();
+      MedalEditActions.invalidGauges();
       valid = false;
     }
 
     if (isBoosted) {
       if (!strBoost) {
-        MedalAddActions.invalidStrBoost();
+        MedalEditActions.invalidStrBoost();
         valid = false;
       }
 
       if (!defBoost) {
-        MedalAddActions.invalidDefBoost();
+        MedalEditActions.invalidDefBoost();
         valid = false;
       }
     }
 
     if (valid) {
-
-      MedalAddActions.upload(file);
-      MedalAddActions.addMedal(name, no, file.name, affinity, attribute, baseStr, baseDef, spAtk, spDesc, 
-          target, tier, mult, gauges, false, false, 0, 0, user._id);
-      MedalAddActions.addMedal(name + ' (Guilted)', no, file.name, affinity, attribute, baseStr, baseDef, spAtk, spDesc, 
-          target, tier, mult, gauges, true, false, 0, 0, user._id);
-      
-      if (isBoosted) {
-        MedalAddActions.addMedal(name + ' (Boosted)', no, file.name, affinity, attribute, baseStr, baseDef, spAtk, spDesc, 
-            target, tier, mult, gauges, false, true, strBoost, defBoost, user._id);
-        MedalAddActions.addMedal(name + ' (Boosted) (Guilted)', no, file.name, affinity, attribute, baseStr, baseDef, spAtk, spDesc, 
-            target, tier, mult, gauges, true, true, strBoost, defBoost, user._id);
-      }
+      MedalEditActions.editMedal(id, name, no, affinity, attribute, baseStr, baseDef, spAtk, spDesc, 
+          target, tier, mult, gauges, strBoost, defBoost);
     }
   }
 
   render() {
 
-    let { imagePreviewUrl } = this.state;
+    let imagePreviewUrl = __dirname + '/../../api/uploads/fullsize/' + this.state.imagePreviewUrl;
 
     let $imagePreview = null;
 
@@ -176,7 +153,7 @@ class MedalAdd extends Component {
                         <div className={'form-group ' + this.state.nameValidationState}>
                           <label className='control-label'>Medal Name</label>
                           <input type='text' className='form-control' ref='nameTextField' value={this.state.name}
-                                 onChange={MedalAddActions.updateName} autoFocus/>
+                                 onChange={MedalEditActions.updateName} autoFocus/>
                           <span className='help-block'>{this.state.helpBlock}</span>
                         </div>
                       </div>
@@ -184,39 +161,35 @@ class MedalAdd extends Component {
                         <div className={'form-group ' + this.state.noValidationState}>
                           <label className='control-label'>No.</label>
                           <input type='text' className='form-control' ref='noTextField' value={this.state.no}
-                                 onChange={MedalAddActions.updateNo} autoFocus/>
+                                 onChange={MedalEditActions.updateNo} autoFocus/>
                         </div>
-                      </div>
-                      <div className={'form-group ' + this.state.imgPathValidationState}>
-                        <label className='control-label'>Medal Image</label>
-                        <input type='file' accept='image/*' onChange={this.handleUpload.bind(this)} name='image'/>
                       </div>
                       <div className={'form-group ' + this.state.affinityValidationState}>
                         <div className='radio radio-inline'>
                           <input type='radio' name='affinity' id='upright' value='upright' checked={this.state.affinity === 'upright'}
-                                 onChange={MedalAddActions.updateAffinity}/>
+                                 onChange={MedalEditActions.updateAffinity}/>
                           <label htmlFor='upright'>Upright</label>
                         </div>
                         <div className='radio radio-inline'>
                           <input type='radio' name='affinity' id='reversed' value='reversed' checked={this.state.affinity === 'reversed'}
-                                 onChange={MedalAddActions.updateAffinity}/>
+                                 onChange={MedalEditActions.updateAffinity}/>
                           <label htmlFor='reversed'>Reversed</label>
                         </div>
                       </div>
                       <div className={'form-group ' + this.state.attributeValidationState}>
                         <div className='radio radio-inline'>
                           <input type='radio' name='attribute' id='power' value='power' checked={this.state.attribute === 'power'}
-                                 onChange={MedalAddActions.updateAttribute}/>
+                                 onChange={MedalEditActions.updateAttribute}/>
                           <label htmlFor='power'>Power</label>
                         </div>
                         <div className='radio radio-inline'>
                           <input type='radio' name='attribute' id='speed' value='speed' checked={this.state.attribute === 'speed'}
-                                 onChange={MedalAddActions.updateAttribute}/>
+                                 onChange={MedalEditActions.updateAttribute}/>
                           <label htmlFor='speed'>Speed</label>
                         </div>
                         <div className='radio radio-inline'>
                           <input type='radio' name='attribute' id='magic' value='magic' checked={this.state.attribute === 'magic'}
-                                 onChange={MedalAddActions.updateAttribute}/>
+                                 onChange={MedalEditActions.updateAttribute}/>
                           <label htmlFor='magic'>Magic</label>
                         </div>
                       </div>
@@ -224,40 +197,40 @@ class MedalAdd extends Component {
                         <div className={'form-group ' + this.state.baseStrValidationState}>
                           <label className='control-label'>Base Strength</label>
                           <input type='text' className='form-control' ref='baseStrTextField' value={this.state.baseStr}
-                                 onChange={MedalAddActions.updateBaseStr} autoFocus/>
+                                 onChange={MedalEditActions.updateBaseStr} autoFocus/>
                         </div>
                       </div>
                       <div className='col-sm-4'>
                         <div className={'form-group ' + this.state.baseDefValidationState}>
                           <label className='control-label'>Base Defense</label>
                           <input type='text' className='form-control' ref='baseDefTextField' value={this.state.baseDef}
-                                 onChange={MedalAddActions.updateBaseDef} autoFocus/>
+                                 onChange={MedalEditActions.updateBaseDef} autoFocus/>
                         </div>
                       </div>
                       <div className={'form-group ' + this.state.spAtkValidationState}>
                         <label className='control-label'>Special Attack</label>
                         <input type='text' className='form-control' ref='spAtkTextField' value={this.state.spAtk}
-                               onChange={MedalAddActions.updateSpAtk} autoFocus/>
+                               onChange={MedalEditActions.updateSpAtk} autoFocus/>
                       </div>
                       <div className={'form-group ' + this.state.spDescValidationState}>
                         <label className='control-label'>Special Attack Description</label>
                         <input type='text' className='form-control' ref='spDescTextField' value={this.state.spDesc}
-                               onChange={MedalAddActions.updateSpDesc} autoFocus/>
+                               onChange={MedalEditActions.updateSpDesc} autoFocus/>
                       </div>
                       <div className={'form-group ' + this.state.targetValidationState}>
                         <div className='radio radio-inline'>
                           <input type='radio' name='target' id='single' value='single' checked={this.state.target === 'single'}
-                                 onChange={MedalAddActions.updateTarget}/>
+                                 onChange={MedalEditActions.updateTarget}/>
                           <label htmlFor='single'>Single Target</label>
                         </div>
                         <div className='radio radio-inline'>
                           <input type='radio' name='target' id='all' value='all' checked={this.state.target === 'all'}
-                                 onChange={MedalAddActions.updateTarget}/>
+                                 onChange={MedalEditActions.updateTarget}/>
                           <label htmlFor='all'>All Targets</label>
                         </div>
                         <div className='radio radio-inline'>
                           <input type='radio' name='target' id='random' value='random' checked={this.state.target === 'random'}
-                                 onChange={MedalAddActions.updateTarget}/>
+                                 onChange={MedalEditActions.updateTarget}/>
                           <label htmlFor='random'>Random</label>
                         </div>
                       </div>
@@ -265,44 +238,47 @@ class MedalAdd extends Component {
                         <div className={'form-group ' + this.state.tierValidationState}>
                           <label className='control-label'>Guilt Tier</label>
                           <input type='text' className='form-control' ref='tierTextField' value={this.state.tier}
-                                 onChange={MedalAddActions.updateTier} autoFocus/>
+                                 onChange={MedalEditActions.updateTier} autoFocus/>
                         </div>
                       </div>
                       <div className='col-sm-4'>
                         <div className={'form-group ' + this.state.multValidationState}>
                           <label className='control-label'>Multiplier</label>
                           <input type='text' className='form-control' ref='multTextField' value={this.state.mult}
-                                 onChange={MedalAddActions.updateMult} autoFocus/>
+                                 onChange={MedalEditActions.updateMult} autoFocus/>
                         </div>
                       </div>
                       <div className='col-sm-4'>
                         <div className={'form-group ' + this.state.gaugesValidationState}>
                           <label className='control-label'>Gauge Cost</label>
                           <input type='text' className='form-control' ref='gaugesTextField' value={this.state.gauges}
-                                 onChange={MedalAddActions.updateGauges} autoFocus/>
+                                 onChange={MedalEditActions.updateGauges} autoFocus/>
                         </div>
                       </div>
-                      <div className='col-sm-4'>
-                        <div className={'form-group ' + this.state.isBoostedValidationState}>
-                          <input type='checkbox' name='isBoosted' id='isBoosted' value='isBoosted'
-                              onChange={MedalAddActions.updateIsBoosted}/>
-                          <label htmlFor='isBoosted'>&nbsp; Medal is Boosted</label>
-                        </div>
-                      </div>
-                      <div className='col-sm-4'>
-                        <div className={'form-group ' + this.state.strBoostValidationState}>
-                          <label className='control-label'>Strength Boost</label>
-                          <input type='text' className='form-control' ref='strBoostTextField' value={this.state.strBoost}
-                                 onChange={MedalAddActions.updateStrBoost} autoFocus/>
-                        </div>
-                      </div>
-                      <div className='col-sm-4'>
-                        <div className={'form-group ' + this.state.defBoostValidationState}>
-                          <label className='control-label'>Defense Boost</label>
-                          <input type='text' className='form-control' ref='defBoostTextField' value={this.state.defBoost}
-                                 onChange={MedalAddActions.updateDefBoost} autoFocus/>
-                        </div>
-                      </div>
+                      { this.state.isBoosted 
+                        ? (
+                          <div>
+                            <div className='col-sm-4'>
+                              <div className={'form-group ' + this.state.isBoostedValidationState}>
+                                <label>This medal is Boosted</label>
+                              </div>
+                            </div>
+                            <div className='col-sm-4'>
+                              <div className={'form-group ' + this.state.strBoostValidationState}>
+                                <label className='control-label'>Strength Boost</label>
+                                <input type='text' className='form-control' ref='strBoostTextField' value={this.state.strBoost}
+                                       onChange={MedalEditActions.updateStrBoost} autoFocus/>
+                              </div>
+                            </div>
+                            <div className='col-sm-4'>
+                              <div className={'form-group ' + this.state.defBoostValidationState}>
+                                <label className='control-label'>Defense Boost</label>
+                                <input type='text' className='form-control' ref='defBoostTextField' value={this.state.defBoost}
+                                       onChange={MedalEditActions.updateDefBoost} autoFocus/>
+                              </div>
+                            </div>
+                          </div>
+                        ) : '' }
                       <button type='submit' className='btn btn-primary'>Submit</button>
                     </form>
                   </div>
@@ -310,13 +286,13 @@ class MedalAdd extends Component {
               ) 
               : (
                 <div className='panel panel-default'>
-                  <div className='panel-heading'>You must have 'Contributor' rights to add medals.</div>
+                  <div className='panel-heading'>You must have 'Contributor' rights to edit medals.</div>
                 </div>
               ) 
             }
           </div>
           <div className='col-sm-4'>
-            { $imagePreview }
+            { this.state.user && this.state.user.contributor ? $imagePreview : '' }
           </div>
         </div>
       </div>
@@ -324,4 +300,4 @@ class MedalAdd extends Component {
   }
 }
 
-export default MedalAdd;
+export default MedalEdit;

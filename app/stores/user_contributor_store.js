@@ -11,7 +11,9 @@ class UserContributorStore {
 
   onLoggedInSuccess(user) {
     this.user = user;
-    UserContributorActions.getMedals(user._id);
+    if (user) {
+      UserContributorActions.getMedals(user._id);
+    }
   }
 
   onLoggedInFail() { /* do nothing */ }
@@ -21,6 +23,14 @@ class UserContributorStore {
   }
 
   onGetMedalsFail(jqXhr) {
+    toastr.error(jqXhr.responseJSON.message);
+  }
+
+  onActivateMedalSuccess(message) {
+    toastr.success(message);
+  }
+
+  onActivateMedalFail(jqXhr) {
     toastr.error(jqXhr.responseJSON.message);
   }
 }

@@ -1,12 +1,14 @@
 import alt from '../alt';
 
-class MedalAddActions {
+class MedalEditActions {
   constructor() {
     this.generateActions(
       'loggedInSuccess',
       'loggedInFail',
-      'medalAddSuccess',
-      'medalAddFail',
+      'getMedalSuccess',
+      'getMedalFail',
+      'medalEditSuccess',
+      'medalEditFail',
       'uploadSuccess',
       'uploadFail',
       'updateFile',
@@ -23,7 +25,6 @@ class MedalAddActions {
       'updateTier',
       'updateMult',
       'updateGauges',
-      'updateIsBoosted',
       'updateDefBoost',
       'updateStrBoost',
       'invalidName',
@@ -38,7 +39,6 @@ class MedalAddActions {
       'invalidTier',
       'invalidMult',
       'invalidGauges',
-      'invalidIsBoosted',
       'invalidDefBoost',
       'invalidStrBoost',
     );
@@ -54,8 +54,18 @@ class MedalAddActions {
       });
   }
 
-  addMedal(name, no, imgPath, affinity, attribute, baseStr, baseDef, spAtk, spDesc, target, tier, mult, 
-      gauges, isGuilted, isBoosted, strBoost, defBoost, addedBy) {
+  getMedal(slug) {
+    $.ajax({ url: '/api/medals/slug/' + slug })
+      .done((data) => {
+        this.actions.getMedalSuccess(data);
+      })
+      .fail((jqXhr) => {
+        this.actions.getMedalFail(jqXhr);
+      });
+  }
+
+  editMedal(id, name, no, affinity, attribute, baseStr, baseDef, spAtk, spDesc, target, tier, mult, 
+      gauges, strBoost, defBoost) {
     
     var slug = name.toLowerCase()
       .replace(/\s+/g, '-')
@@ -65,13 +75,12 @@ class MedalAddActions {
       .replace(/-+$/, '');
 
     $.ajax({
-      type: 'POST',
-      url: '/api/medals',
+      type: 'PUT',
+      url: '/api/medals/' + id,
       data: { 
         name: name,
         no: no,
         slug: slug,
-        imgPath: imgPath,
         affinity: affinity,
         attribute: attribute,
         baseStr: baseStr,
@@ -82,43 +91,17 @@ class MedalAddActions {
         tier: tier,
         mult: mult,
         gauges: gauges,
-        isGuilted: isGuilted,
-        isBoosted: isBoosted,
         strBoost: strBoost,
-        defBoost: defBoost,
-        addedBy: addedBy
+        defBoost: defBoost
       }
     })
       .done((data) => {
-        this.actions.medalAddSuccess(data.message);
+        this.actions.medalEditSuccess(data.message);
       })
       .fail((jqXhr) => {
-        this.actions.medalAddFail(jqXhr.responseJSON.message);
+        this.actions.medalEditFail(jqXhr.responseJSON.message);
       });
-  }
-
-  upload(imageFile) {
-
-    return new Promise((resolve, reject) => {
-      let imageFormData = new FormData();
-
-      imageFormData.append('imageFile', imageFile);
-      
-      var xhr = new XMLHttpRequest();
-      
-      xhr.open('post', '/api/upload', true);
-      
-      xhr.onload = function () {
-        if (this.status == 200) {
-          resolve(this.response);
-        } else {
-          reject(this.statusText);
-        }
-      };
-      
-      xhr.send(imageFormData);
-    });
   }
 }
 
-export default alt.createActions(MedalAddActions);
+export default alt.createActions(MedalEditActions);

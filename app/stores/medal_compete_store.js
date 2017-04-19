@@ -9,6 +9,7 @@ class MedalCompeteStore {
     
     this.medals = [];
     this.showCards = false;
+    this.showedCardsOnce = false;
   }
 
   onLoggedInSuccess(user) {

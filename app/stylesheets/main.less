@@ -173,6 +173,18 @@ footer .thumb-md {
 }
 
 /*
+ * Contributor profile page styles.
+ */
+
+ .contributor {
+
+  .btn {
+    margin-top: 12px;
+    margin-right: 12px;
+  }
+ }
+
+/*
  * Medal profile page styles.
  */
 
@@ -226,6 +238,33 @@ footer .thumb-md {
   }
 }
 
+.variants {
+  margin-bottom: 18px;
+  position: relative;
+
+  a {
+    color: #fff;
+    margin-left: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    position: relative;
+  }
+
+  a.active {
+    color: #F5E202;
+  }
+
+  a.active::before {
+    content: '\25BC';
+    font-size: 0.8em;
+    display: inline-block;
+    position: absolute;
+    bottom: 1.5em;
+    left: 0;
+    text-align: center;
+    width: 100%;
+  }
+}
 
 .profile .tri {
   border-top-color: #fff;

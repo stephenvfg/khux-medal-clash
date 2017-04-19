@@ -24,6 +24,12 @@ class NavbarStore {
 
   onLoginSuccess(user) {
     this.user = user;
+
+    mixpanel.track("User logged in");
+    mixpanel.identify(user._id);    
+    mixpanel.people.set({
+      "$last_login": new Date()
+    });
   }
 
   onLoginFail(jqXhr) {
@@ -38,6 +44,14 @@ class NavbarStore {
 
   onSignupSuccess(user) {
     this.user = user;
+
+    mixpanel.track("User signed up");
+    mixpanel.alias(user._id);
+    mixpanel.people.set({
+      "$email": user.email,
+      "$created": new Date(),
+      "$last_login": new Date()
+    });
   }
 
   onSignupFail(jqXhr) {
@@ -55,6 +69,8 @@ class NavbarStore {
 
   onForgotSuccess(message) {
     toastr.success(message); 
+
+    mixpanel.track("User forgot password");
   }
 
   onForgotFail(jqXhr) {
@@ -87,7 +103,7 @@ class NavbarStore {
   onInvalidEmail(event) { this.emailValidationState = 'has-error'; }
 
   onFindMedalSuccess(payload) {
-    payload.history.pushState(null, '/medals/' + payload.slug);
+    payload.history.pushState(null, '/medal/' + payload.slug);
   }
 
   onFindMedalFail(payload) {

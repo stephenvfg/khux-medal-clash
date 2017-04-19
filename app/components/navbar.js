@@ -36,6 +36,7 @@ export default class Navbar extends Component {
         searchForm: this.refs.searchForm,
         history: this.props.history
       });
+      mixpanel.track("Searched for a medal");
     }
   }
 
@@ -165,7 +166,7 @@ export default class Navbar extends Component {
     let forgotForm =  (
       <form ref='forgotForm' className='navbar-form animated' onSubmit={this.handleForgot.bind(this)}>
         <input type='email' className='form-control' placeholder='Email' value={this.state.email} onChange={NavbarActions.updateEmail} />
-        <button className='btn btn-primary' onClick={this.handleForgot.bind(this)}>Submit</button>
+        <button className='btn btn-primary' onClick={this.handleForgot.bind(this)}>Reset Password</button>
         <a href='#' onClick={this.showSignup.bind(this)}>Don't have an account? Sign up.</a>
         <a href='#' onClick={this.showLogin.bind(this)}>Already have an account? Log in.</a>
       </form>

@@ -39,6 +39,7 @@ class MedalCompeteActions {
     })
       .done(() => {
         this.actions.getTwoMedals();
+        mixpanel.track("User voted");
       })
       .fail((jqXhr) => {
         this.actions.voteFail(jqXhr.responseJSON.message);

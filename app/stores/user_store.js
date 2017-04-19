@@ -20,8 +20,6 @@ class UserStore {
     this.password2ValidationState = '';
     this.emailValidationState = '';
 
-    this.successMessage = '';
-
     this.user = '';
   }
 
@@ -40,7 +38,7 @@ class UserStore {
   onLoggedInFail() { /* do nothing */ }
 
   onUpdateSuccess(message) {
-    this.successMessage = message;
+    toastr.success(message);
 
     this.initUsername = this.username;
     this.initEmail = this.email;

@@ -26,12 +26,20 @@ export default class UserContributor extends Component {
     this.setState(state);
   }
 
+  handleActivate(event) {
+    event.preventDefault();
+
+    let id = event.target.getAttribute('data-id');
+    let active = event.target.value;
+
+    UserContributorActions.activateMedal(id, active);
+  }
+
   render() {
     let medalsList = this.state.medals.map((medal, index) => {
       return (
         <div key={medal._id} className='list-group-item animated fadeIn'>
           <div className='media'>
-            <span className='position pull-left'>{index + 1}</span>
             <div className='pull-left thumb-lg'>
               <Link to={'/medal/' + medal.slug}>
                 <MedalImg isGuilted={medal.isGuilted} isBoosted={medal.isBoosted} 
@@ -44,13 +52,17 @@ export default class UserContributor extends Component {
               <h4 className='media-heading'>
                 <strong><Link to={'/medal/' + medal.slug}>
                   { medal.name }
-                  { medal.isGuilted ? (' (Guilted)') : ('') }
-                  { medal.isBoosted ? (' (Boosted)') : ('') }
                 </Link></strong>
               </h4>
-              <h4>Wins: <strong>{medal.wins}</strong></h4>
-              <h4>Losses: <strong>{medal.losses}</strong></h4>
-              <h4>Rate: <strong>{(medal.ratio*100).toFixed(1) + '%'}</strong></h4>
+              <Link to={'/edit/' + medal.slug} className='btn btn-default'>
+                Edit Medal
+              </Link>
+              <button className='btn btn-default' 
+                  data-id={medal._id}
+                  value={!medal._active}
+                  onClick={this.handleActivate.bind(this)}>
+                {medal._active ? 'Deactivate' : 'Activate'}
+              </button>
             </div>
           </div>
         </div>
@@ -58,9 +70,23 @@ export default class UserContributor extends Component {
     });
 
     return (
-      <div className='container'>
+      <div className='container contributor'>
         <div className='medal-list list-group col-xs-12 col-sm-6'>
-          {medalsList}
+          { this.state.user && this.state.user.contributor
+            ? (
+              <div>
+                <div className='panel panel-default flipInX animated'>
+                  <div className='panel-heading'>Edit and manage the medals that you've added in the past.</div>
+                </div>
+                {medalsList}
+              </div>
+            )
+            : (
+              <div className='panel panel-default flipInX animated'>
+                <div className='panel-heading'>You must be a contributor to access this page.</div>
+              </div>
+            ) 
+          }
         </div>
       </div>
     );

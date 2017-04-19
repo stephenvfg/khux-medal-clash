@@ -38,8 +38,6 @@ export default class Medal extends Component {
       <div className='container'>
         <h1 className='profile-name'><strong>
           { this.state.medal.name }
-          { this.state.medal.isGuilted ? (' (Guilted)') : ('') }
-          { this.state.medal.isBoosted ? (' (Boosted)') : ('') }
         </strong></h1>
         <div className='col-sm-4'>
           <div className='profile-img'>
@@ -56,6 +54,24 @@ export default class Medal extends Component {
               <li><span className='stats-number win-stats'>{this.state.medal.wins}</span> Wins</li>
               <li><span className='stats-number lose-stats'>{this.state.medal.losses}</span> Losses</li>
             </ul>
+          </div>
+          <div className='variants'>
+            { this.state.stdVer ? (
+              <Link className={ this.state.medal._id == this.state.stdVer._id ? 'active' : '' }
+                  to={'/medal/' + this.state.stdVer.slug}>Base</Link>
+              ) : '' }
+            { this.state.gltVer ? (
+              <Link className={ this.state.medal._id == this.state.gltVer._id ? 'active' : '' }
+                  to={'/medal/' + this.state.gltVer.slug}>Guilted</Link>
+              ) : '' }
+            { this.state.bstVer ? (
+              <Link className={ this.state.medal._id == this.state.bstVer._id ? 'active' : '' }
+                  to={'/medal/' + this.state.bstVer.slug}>Boosted</Link>
+              ) : '' }
+            { this.state.gltBstVer ? (
+              <Link className={ this.state.medal._id == this.state.gltBstVer._id ? 'active' : '' }
+                  to={'/medal/' + this.state.gltBstVer.slug}>Boosted & Guilted</Link>
+              ) : '' }
           </div>
           <MedalCard medal={this.state.medal} />
         </div>
