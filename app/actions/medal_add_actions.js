@@ -7,6 +7,8 @@ class MedalAddActions {
       'loggedInFail',
       'medalAddSuccess',
       'medalAddFail',
+      'signSuccess',
+      'signFail',
       'uploadSuccess',
       'uploadFail',
       'updateFile',
@@ -97,22 +99,42 @@ class MedalAddActions {
       });
   }
 
-  upload(imageFile) {
-    return new Promise((resolve, reject) => {
-      let imageFormData = new FormData();
-      imageFormData.append('imageFile', imageFile);
-      
-      var xhr = new XMLHttpRequest();
-      xhr.open('post', '/api/upload', true);
-      xhr.onload = function () {
-        if (this.status == 200) {
-          resolve(this.response);
-        } else {
-          reject(this.statusText);
+  signUpload(imageFile) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', `/api/sign-s3?file-name=${imageFile.name}&file-type=${imageFile.type}`);
+    xhr.onreadystatechange = () => {
+      if(xhr.readyState === 4){
+        if(xhr.status === 200){
+          const response = JSON.parse(xhr.responseText);
+          var data = {
+            file: imageFile,
+            signedRequest: response.signedRequest,
+            url: response.url
+          };
+          this.actions.signSuccess(data);
         }
-      };
-      xhr.send(imageFormData);
-    });
+        else{
+          this.actions.signFail('Could not get signed URL to upload image.');
+        }
+      }
+    };
+    xhr.send();
+  }
+
+  uploadFile(file, signedRequest, url){
+    const xhr = new XMLHttpRequest();
+    xhr.open('PUT', signedRequest);
+    xhr.onreadystatechange = () => {
+      if(xhr.readyState === 4){
+        if(xhr.status === 200){
+          this.actions.uploadSuccess(url);
+        }
+        else{
+          this.actions.uploadFail('Could not upload file.');
+        }
+      }
+    };
+    xhr.send(file);
   }
 }
 

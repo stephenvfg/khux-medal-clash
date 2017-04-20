@@ -10,6 +10,8 @@ export default (props) => {
           <h1>Launch checklist</h1>
           <ul>
             <li>Add personal votes history page</li>
+            <li>Set up AWS S3 for image storage: https://devcenter.heroku.com/articles/s3</li>
+            <li>Change image path and rendering logic to fit AWS</li>
             <li>Add ability to undo vote</li>
             <li>ssl and paid heroku dyno</li>
             <li>Ask to sign in / make user account after first 7 clicks: "You can play without registering BUT if you register you get to ..."</li>

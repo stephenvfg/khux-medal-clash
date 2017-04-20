@@ -131,7 +131,7 @@ class MedalAdd extends Component {
     }
 
     if (valid) {
-      MedalAddActions.upload(file);
+      MedalAddActions.signUpload(file);
 
       MedalAddActions.addMedal(name, no, file.name, affinity, attribute, baseStr, baseDef, spAtk, spDesc, 
           target, tier, mult, gauges, false, false, 0, 0, user._id);

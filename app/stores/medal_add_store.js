@@ -58,7 +58,17 @@ class MedalAddStore {
     toastr.error(errorMessage);
   }
 
-  onUploadSuccess(successMessage) { /* do nothing */ }
+  onSignSuccess(data) {
+    MedalAddActions.uploadFile(data.file, data.signedRequest, data.url);
+  }
+
+  onSignFail(errorMessage) {
+    toastr.error(errorMessage);
+  }
+
+  onUploadSuccess(successMessage) { 
+    console.log(successMessage);
+  }
 
   onUploadFail(errorMessage) {
     toastr.error(errorMessage);

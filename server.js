@@ -1,6 +1,9 @@
 // Babel ES6/JSX Compiler
 require('babel-register');
 
+// Environment variables
+require('dotenv').config()
+
 var swig  = require('swig');
 var React = require('react');
 var ReactDOM = require('react-dom/server');
@@ -25,6 +28,10 @@ var async = require('async');
 var request = require('request');
 var xml2js = require('xml2js');
 var _ = require('underscore');
+
+// s3 dependencies
+var aws = require('aws-sdk');
+var s3Bucket = process.env.S3_BUCKET;
 
 // db dependencies
 var mongoose = require('mongoose');
@@ -333,6 +340,41 @@ app.get('/api/reset/:token', function(req, res) {
     }
   ], function(err) {
     if (err) return next(err);
+  });
+});
+
+/////////////////////////////////////////////////////////
+/////////// AWS FILE STORAGE ENDPOINTS BELOW ////////////
+/////////////////////////////////////////////////////////
+
+/**
+ * GET /api/sign-s3
+ * Generates and returns signature for client-side javascript to upload image.
+ */
+
+app.get('/api/sign-s3', (req, res) => {
+  const s3 = new aws.S3();
+  const fileName = req.query['file-name'];
+  const fileType = req.query['file-type'];
+  const s3Params = {
+    Bucket: s3Bucket,
+    Key: fileName,
+    Expires: 60,
+    ContentType: fileType,
+    ACL: 'public-read'
+  };
+
+  s3.getSignedUrl('putObject', s3Params, (err, data) => {
+    if(err){
+      console.log(err);
+      return res.end();
+    }
+    const returnData = {
+      signedRequest: data,
+      url: `https://${s3Bucket}.s3.amazonaws.com/${fileName}`
+    };
+    res.write(JSON.stringify(returnData));
+    res.end();
   });
 });
 
@@ -918,7 +960,6 @@ app.post('/api/upload', isAuthenticatedContributor, function(req, res) {
 
     fs.readFile(tempPath, function (err, data) {
       if(!originalFilename){
-        console.info("There was an error - no image name found.")
         res.redirect("/");
         res.end();
       } else {
@@ -1132,10 +1173,13 @@ app.put('/api/user/admin', isAuthenticatedAdmin, function(req, res, next) {
   var admin = req.body.admin ? req.body.admin : undefined;
   var _id = req.body.id ? req.body.id : undefined;
 
-  var adminId = '58dc9e7045371246b4cd8d84';
-  var stephenId = '58dc9e7045371246b4cd8d84';
+  var adminDevId = '58dc9e7045371246b4cd8d84';
+  var stephenDevId = '58dc9e7045371246b4cd8d84';
 
-  if (_id == adminId || _id == stephenId) {
+  var adminId = '58f7974b7d44850011ee5a48';
+  var stephenId = '58f7976b7d44850011ee5a49';
+
+  if (_id == adminDevId || _id == stephenDevId || _id == adminId || _id == stephenId) {
     return res.status(400).send({ message: 'Cannot change this user\'s permissions. Sorry!!! ;)' });
   }
 
