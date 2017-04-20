@@ -67,7 +67,7 @@ class MedalAddStore {
   }
 
   onUploadSuccess(successMessage) { 
-    console.log(successMessage);
+    toastr.success('Medal image successfully uploaded.')
   }
 
   onUploadFail(errorMessage) {

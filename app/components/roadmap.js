@@ -10,8 +10,7 @@ export default (props) => {
           <h1>Launch checklist</h1>
           <ul>
             <li>Add personal votes history page</li>
-            <li>Set up AWS S3 for image storage: https://devcenter.heroku.com/articles/s3</li>
-            <li>Change image path and rendering logic to fit AWS</li>
+            <li>Remove legacy image paths and API endpoints</li>
             <li>Add ability to undo vote</li>
             <li>ssl and paid heroku dyno</li>
             <li>Ask to sign in / make user account after first 7 clicks: "You can play without registering BUT if you register you get to ..."</li>
@@ -63,6 +62,8 @@ export default (props) => {
         <div className='col-xs-12 col-sm-12'>
           <h1>Done</h1>
           <ul>
+            <li><del>Set up AWS S3 for image storage: https://devcenter.heroku.com/articles/s3</del></li>
+            <li><del>Change image path and rendering logic to fit AWS</del></li>
             <li><del>Replace success/fail messaging with proper toastr messaging (or other?)</del></li>
             <li><del>Add medals edit page</del></li>
             <li><del>Add links to guilted/booted versions of medals to medal info page</del></li>
