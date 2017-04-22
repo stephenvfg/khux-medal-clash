@@ -14,7 +14,6 @@ export default (props) => {
             <li>Add ability to undo vote</li>
             <li>ssl and paid heroku dyno</li>
             <li>Ask to sign in / make user account after first 7 clicks: "You can play without registering BUT if you register you get to ..."</li>
-            <li>Add all medals</li>
             <li>Review the if '(winner.voted || loser.voted) return res.status(200).end();' logic</li>
             <li>Review medal retrieval logic so that the 'newest' medals get a lot of votes to catch up</li>
             <li>Add "HOW THIS WORKS" section... medals in system (boosted/guilted) --> vote --> generate stats --> vote more --> create geniune ranking list --> view other info</li>
@@ -23,6 +22,7 @@ export default (props) => {
         <div className='col-xs-12 col-sm-4'>
           <h1>Upcoming Features</h1>
           <ul>
+            <li>Add placeholder content where things load (for example: medal image placeholder)</li>
             <li>Add "help needed" section</li>
             <li>Externalize strings into separate file for internationalization</li>
             <li>Add pagination to the medal listing pages</li>
@@ -47,6 +47,8 @@ export default (props) => {
         <div className='col-xs-12 col-sm-4'>
           <h1>Bug Fixes</h1>
           <ul>
+            <li>Issue with adding medals: if the image file has '&' in it then it fails to upload</li>
+            <li>Issue with adding medals: if there is already a medal with same name/slug, it says the add succeeded even if it actually fails</li>
             <li>So many validation issues with adding and editing medals... regarding the name of the medal, whether or not it has guilted/boosted, and also the slug being unique</li>
             <li>If I deactivate a medal, the votes history for other medals including that medal show up as 'Loading...' with an error message. See api/medals/vote/:id</li>
             <li>Search doesn't work when searching for guilted or boosted medals</li>
@@ -62,6 +64,8 @@ export default (props) => {
         <div className='col-xs-12 col-sm-12'>
           <h1>Done</h1>
           <ul>
+            <li><del>Make image blank space a little larger by default</del></li>
+            <li><del>Add all medals</del></li>
             <li><del>Set up AWS S3 for image storage: https://devcenter.heroku.com/articles/s3</del></li>
             <li><del>Change image path and rendering logic to fit AWS</del></li>
             <li><del>Replace success/fail messaging with proper toastr messaging (or other?)</del></li>

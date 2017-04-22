@@ -132,7 +132,7 @@ class MedalEdit extends Component {
 
   render() {
 
-    let imagePreviewUrl = __dirname + '/../../api/uploads/fullsize/' + this.state.imagePreviewUrl;
+    let imagePreviewUrl = 'https://' + (process.env.S3_BUCKET || 'khux-medal-clash-assets') + '.s3.amazonaws.com/' + this.state.imagePreviewUrl;
 
     let $imagePreview = null;
 
