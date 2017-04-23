@@ -10,6 +10,8 @@ export default (props) => {
           <h1>Launch checklist</h1>
           <ul>
             <li>Add personal votes history page</li>
+            <li>Help get to 25k votes</li>
+            <li>Refine image compete API logic: dont compete two of the same medal, etc</li>
             <li>Remove legacy image paths and API endpoints</li>
             <li>Add ability to undo vote</li>
             <li>ssl and paid heroku dyno</li>
@@ -17,6 +19,8 @@ export default (props) => {
             <li>Review the if '(winner.voted || loser.voted) return res.status(200).end();' logic</li>
             <li>Review medal retrieval logic so that the 'newest' medals get a lot of votes to catch up</li>
             <li>Add "HOW THIS WORKS" section... medals in system (boosted/guilted) --> vote --> generate stats --> vote more --> create geniune ranking list --> view other info</li>
+            <li>FINAL CLEANUP: Check for any personal / irrelvant information, clean up this roadmap page</li>
+            <li>FINAL CLEANUP: Verify all important user flows/paths</li>
           </ul>
         </div>
         <div className='col-xs-12 col-sm-4'>
