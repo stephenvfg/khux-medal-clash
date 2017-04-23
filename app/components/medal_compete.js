@@ -5,6 +5,7 @@ import MedalCompeteActions from '../actions/medal_compete_actions';
 import { first, without, findWhere } from 'underscore';
 import MedalImg from './medal_img';
 import MedalCard from './medal_card';
+import VotesGoal from './votes_goal';
 
 export default class medal_compete extends Component {
 
@@ -80,6 +81,7 @@ export default class medal_compete extends Component {
 
     return (
       <div className='container'>
+        <VotesGoal key={this.state.votesKey} />
         <h3 className='text-center medal-compete'><strong>Which medal would you keep?</strong></h3>
         <div className='row'>
           {medalNodes}

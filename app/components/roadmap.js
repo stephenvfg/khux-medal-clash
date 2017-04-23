@@ -10,7 +10,6 @@ export default (props) => {
           <h1>Launch checklist</h1>
           <ul>
             <li>Add personal votes history page</li>
-            <li>Help get to 25k votes</li>
             <li>Refine image compete API logic: dont compete two of the same medal, etc</li>
             <li>Remove legacy image paths and API endpoints</li>
             <li>Add ability to undo vote</li>
@@ -68,6 +67,7 @@ export default (props) => {
         <div className='col-xs-12 col-sm-12'>
           <h1>Done</h1>
           <ul>
+            <li><del>Help get to 100k votes -- format votes bar, dismissable, minimum 20% width to see count</del></li>
             <li><del>Make image blank space a little larger by default</del></li>
             <li><del>Add all medals</del></li>
             <li><del>Set up AWS S3 for image storage: https://devcenter.heroku.com/articles/s3</del></li>

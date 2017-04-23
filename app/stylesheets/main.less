@@ -173,6 +173,43 @@ footer .thumb-md {
 }
 
 /*
+ * Votes goal progress bar styles
+ */
+
+ .votes-goal {
+
+  .card {
+    background-color: rgba(255, 255, 255, 0.82);
+    border-radius: 2px;
+    border-color: #dee5e7;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+  }
+
+  strong {
+    color: #0CA88A;
+  }
+
+  a {
+    color: #777;
+    font: 14px/100%;
+    position: absolute;
+    right: 9px;
+    text-decoration: none;
+    text-shadow: 0 1px 0 #fff;
+    top: 5px;
+  }
+
+  a:after {
+    content: '✖';
+  }
+ }
+
+ .progress-bar {
+  background-color: #0CA88A;
+ }
+
+/*
  * Contributor profile page styles.
  */
 
@@ -348,6 +385,8 @@ footer .thumb-md {
   max-width: 100%;
   vertical-align: middle;
 }
+
+
 
 div.medal-compete {
 

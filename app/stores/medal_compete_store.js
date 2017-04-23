@@ -10,6 +10,9 @@ class MedalCompeteStore {
     this.medals = [];
     this.showCards = false;
     this.showedCardsOnce = false;
+
+    // hack-y solution to force votes bar to reload
+    this.votesKey = Math.random();
   }
 
   onLoggedInSuccess(user) {
@@ -20,6 +23,9 @@ class MedalCompeteStore {
 
   onGetTwoMedalsSuccess(data) {
     this.medals = data;
+
+    // hack-y solution to force votes bar to reload
+    this.votesKey = Math.random();
   }
 
   onGetTwoMedalsFail(errorMessage) {
