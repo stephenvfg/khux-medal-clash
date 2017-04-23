@@ -10,13 +10,9 @@ export default (props) => {
           <h1>Launch checklist</h1>
           <ul>
             <li>Add personal votes history page</li>
-            <li>Refine image compete API logic: dont compete two of the same medal, etc</li>
-            <li>Remove legacy image paths and API endpoints</li>
             <li>Add ability to undo vote</li>
             <li>ssl and paid heroku dyno</li>
             <li>Ask to sign in / make user account after first 7 clicks: "You can play without registering BUT if you register you get to ..."</li>
-            <li>Review the if '(winner.voted || loser.voted) return res.status(200).end();' logic</li>
-            <li>Review medal retrieval logic so that the 'newest' medals get a lot of votes to catch up</li>
             <li>Add "HOW THIS WORKS" section... medals in system (boosted/guilted) --> vote --> generate stats --> vote more --> create geniune ranking list --> view other info</li>
             <li>FINAL CLEANUP: Check for any personal / irrelvant information, clean up this roadmap page</li>
             <li>FINAL CLEANUP: Verify all important user flows/paths</li>
@@ -67,6 +63,10 @@ export default (props) => {
         <div className='col-xs-12 col-sm-12'>
           <h1>Done</h1>
           <ul>
+            <li><del>Review medal retrieval logic so that the 'newest' medals get a lot of votes to catch up</del></li>
+            <li><del>Remove legacy image paths and API endpoints</del></li>
+            <li><del>Refine image compete API logic: dont compete two of the same medal, etc</del></li>
+            <li><del>Review the if '(winner.voted || loser.voted) return res.status(200).end();' logic</del></li>
             <li><del>Help get to 100k votes -- format votes bar, dismissable, minimum 20% width to see count</del></li>
             <li><del>Make image blank space a little larger by default</del></li>
             <li><del>Add all medals</del></li>

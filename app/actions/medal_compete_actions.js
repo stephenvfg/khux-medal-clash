@@ -22,7 +22,11 @@ class MedalCompeteActions {
   }
 
   getTwoMedals() {
-    $.ajax({ url: '/api/medals' })
+
+    // 10% of the time, use the featured path
+    var pathAppend = (Math.random() > .9) ? '/featured' : '';
+
+    $.ajax({ url: '/api/medals' + pathAppend })
       .done(data => {
         this.actions.getTwoMedalsSuccess(data);
       })

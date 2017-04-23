@@ -389,57 +389,128 @@ app.get('/api/sign-s3', (req, res) => {
 
 app.get('/api/medals', function(req, res, next) {
 
-  Medal.find({ random: { $near: [Math.random(), 0] } })
+  var medalArray = [];
+
+  /* pick first medal at random */
+  Medal.find()
     .where('_active', true)
     .where('voted', false)
-    .limit(2)
-    .exec(function(err, medals) {
+    .limit(1)
+    .exec(function(err, medalOne) {
       if (err) return next(err);
 
-      if (medals.length === 2) {
-        return res.send(medals);
+      if (medalOne.length === 1) {
+        medalArray.push(medalOne[0]);
+      } else {
+        /* do this is there weren't enough medals that haven't been voted yet */
+        /* set all medals as voted = false and pick two at random */
+        Medal.update({}, { $set: { voted: false } }, { multi: true }, function(err) {
+      
+          Medal.find({ random: { $near: [Math.random(), 0] } })
+            .where('_active', true)
+            .limit(2)
+            .exec(function(err, medals) {
+              if (err) return next(err);
+
+              if (medals.length === 2) {
+                return res.send(medals);
+              }
+            });
+          });
       }
 
-      Medal.update({}, { $set: { voted: false } }, { multi: true }, function(err) {
+      /* pick second medal at random as long as it's different from first */
+      Medal.find({ random: { $near: [Math.random(), 0] } })
+        .where('_active', true)
+        .where('voted', false)
+        .where('no', {$ne: medalOne[0].no})
+        .limit(1)
+        .exec(function(err, medalTwo) {
+          if (err) return next(err);
+
+          if (medalTwo.length === 1) {
+            medalArray.push(medalTwo[0]);
+          }
+
+          if (medalArray.length === 2) {
+            return res.send(medalArray);
+          } 
+
+          /* do this is there weren't enough medals that haven't been voted yet */
+          /* set all medals as voted = false and pick two at random */
+          Medal.update({}, { $set: { voted: false } }, { multi: true }, function(err) {
         
-        Medal.find({ random: { $near: [Math.random(), 0] } })
-          .where('_active', true)
-          .where('voted', false)
-          .limit(2)
-          .exec(function(err, medals) {
-            if (err) return next(err);
+            Medal.find({ random: { $near: [Math.random(), 0] } })
+              .where('_active', true)
+              .limit(2)
+              .exec(function(err, medals) {
+                if (err) return next(err);
 
-            if (medals.length === 2) {
-              return res.send(medals);
-            }
+                if (medals.length === 2) {
+                  return res.send(medals);
+                }
+              });
           });
+        });
       });
-    });
-});
+  });
 
 /**
- * GET /api/uploads/fullsize/:file
- * Retrieve a full size image from the uploads directory.
+ * GET /api/medals/featured
+ * Returns 2 medals where one is featured
  */
 
-app.get('/api/uploads/fullsize/:file', function (req, res){
-  file = req.params.file;
-  var img = fs.readFileSync(__dirname + "/uploads/fullsize/" + file);
-  res.writeHead(200, {'Content-Type': 'image/*' });
-  res.end(img, 'binary');
-});
+app.get('/api/medals/featured', function(req, res, next) {
 
-/**
- * GET /api/uploads/thumbs/:file
- * Retrieve a thumbnail image from the uploads directory.
- */
+  var medalArray = [];
 
-app.get('/api/uploads/thumbs/:file', function (req, res){
-  file = req.params.file;
-  var img = fs.readFileSync(__dirname + "/uploads/thumbs/" + file);
-  res.writeHead(200, {'Content-Type': 'image/*' });
-  res.end(img, 'binary');
-});
+  /* pick first medal from list of 25 least-losses medals */
+  Medal.find()
+    .where('_active', true)
+    .sort({'losses':1})
+    .limit(10)
+    .exec(function(err, medalOne) {
+      if (err) return next(err);
+
+      if (medalOne.length >= 1) {
+        medalArray.push(medalOne[Math.floor(Math.random()*medalOne.length)]);
+      }
+
+      /* pick second medal at random as long as it's different from first */
+      Medal.find({ random: { $near: [Math.random(), 0] } })
+        .where('_active', true)
+        .where('voted', false)
+        .where('no', {$ne: medalOne[0].no})
+        .limit(1)
+        .exec(function(err, medalTwo) {
+          if (err) return next(err);
+
+          if (medalTwo.length === 1) {
+            medalArray.push(medalTwo[0]);
+          }
+
+          if (medalArray.length === 2) {
+            return res.send(medalArray);
+          } 
+
+          /* do this is there weren't enough medals that haven't been voted yet */
+          /* set all medals as voted = false and pick two at random */
+          Medal.update({}, { $set: { voted: false } }, { multi: true }, function(err) {
+        
+            Medal.find({ random: { $near: [Math.random(), 0] } })
+              .where('_active', true)
+              .limit(2)
+              .exec(function(err, medals) {
+                if (err) return next(err);
+
+                if (medals.length === 2) {
+                  return res.send(medals);
+                }
+              });
+          });
+        });
+      });
+  });
 
 /**
  * PUT /api/medals
@@ -496,7 +567,7 @@ app.put('/api/medals', function(req, res, next) {
       return res.status(404).send({ message: 'One of the medals no longer exists.' });
     }
 
-    if (winner.voted || loser.voted) {
+    if ((winner.voted || loser.voted) && !voter) {
       return res.status(200).end();
     }
 
@@ -679,7 +750,7 @@ app.get('/api/medals/vote/:id', function(req, res, next) {
 
 /**
  * GET /api/medals/user/:id
- * Returns all medals uploaded by the specified user ID.
+ * Returns all medals added by the specified user ID.
  */
 
 app.get('/api/medals/user/:id', function(req, res, next) {
@@ -955,45 +1026,6 @@ app.put('/api/user', isAuthenticated, function(req, res, next) {
 /////////////////////////////////////////////////////////
 ///// CONTRIBUTOR AUTH REQUIRED FOR ALL ROUTES BELOW ////
 /////////////////////////////////////////////////////////
-
-/**
- * POST /api/upload
- * Upload a file to the uploads directory.
- */
-
-app.post('/api/upload', isAuthenticatedContributor, function(req, res) {
-
-  var form = new multiparty.Form();
-
-  form.parse(req, (err, fields, files) => {
-
-    var tempPath = files.imageFile[0].path;
-    var originalFilename = files.imageFile[0].originalFilename;
-
-    fs.readFile(tempPath, function (err, data) {
-      if(!originalFilename){
-        res.redirect("/");
-        res.end();
-      } else {
-        var newPath = __dirname + "/uploads/fullsize/" + originalFilename;
-        var thumbPath = __dirname + "/uploads/thumbs/" + originalFilename;
-
-        fs.writeFile(newPath, data, (err) => {
-
-          sharp(newPath)
-            .resize(128, null)
-            .toFile(thumbPath, function(err) {
-              if (err) console.info(err);
-            });
-
-          fs.unlink(tempPath, () => {
-            console.info("File uploaded to: " + newPath);
-          });
-        }); 
-      }
-    });
-  });
-});
 
 /**
  * POST /api/medals
