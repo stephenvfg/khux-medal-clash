@@ -81,7 +81,9 @@ export default class medal_compete extends Component {
 
     return (
       <div className='container'>
-        <VotesGoal key={this.state.votesKey} />
+        <div className='votes-goal-container'>
+          <VotesGoal key={this.state.votesKey} />
+        </div>
         <h3 className='text-center medal-compete'><strong>Which medal would you keep?</strong></h3>
         <div className='row'>
           {medalNodes}

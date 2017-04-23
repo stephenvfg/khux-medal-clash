@@ -23,12 +23,12 @@ export default class VotesGoal extends Component {
   }
 
   hideVotes() {
-     $(".votes-goal").hide();
+     $(".votes-goal-container").hide();
   }
 
   render() {
 
-    var pct = ((this.state.count/100000)*100 > 10) ? (this.state.count/100000)*100 + '%' : '20%';
+    var pct = (this.state.count/100000)*100 + '%';
 
     return (
       <div className='votes-goal'>
