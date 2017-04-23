@@ -747,6 +747,18 @@ app.get('/api/votes', function(req, res, next) {
 });
 
 /**
+ * GET /api/votes/count
+ * Returns the total number of votes.
+ */
+
+app.get('/api/votes/count', function(req, res, next) {
+  Vote.count({ _active: true }, function(err, count) {
+    if (err) return next(err);
+    res.send({ count: count });
+  });
+});
+
+/**
  * GET /api/votes/medal/:id
  * Returns 10 most recent votes tied to the medal.
  */
