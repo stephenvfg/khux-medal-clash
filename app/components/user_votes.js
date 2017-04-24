@@ -43,9 +43,11 @@ class UserVotes extends Component {
     event.preventDefault();
 
     let id = event.target.getAttribute('data-id');
+    let winner = event.target.getAttribute('data-winner');
+    let loser = event.target.getAttribute('data-loser');
     let active = event.target.value;
 
-    UserVotesActions.updateVote(id, null, null, active);
+    UserVotesActions.updateVote(id, winner, loser, active);
   }
 
   handleVoteUpdate(event) {
@@ -81,6 +83,8 @@ class UserVotes extends Component {
             <div className='col-xs-12 col-md-6'>
               <button className='btn btn-default' 
                   data-id={vote._id} 
+                  data-winner={vote.winner} 
+                  data-loser={vote.loser} 
                   value={!vote._active} 
                   onClick={this.handleVoteActivate.bind(this)}>
                 {vote._active ? 'Remove Vote' : 'Enable Vote'}

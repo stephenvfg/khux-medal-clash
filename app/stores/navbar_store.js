@@ -30,6 +30,8 @@ class NavbarStore {
     mixpanel.people.set({
       "$last_login": new Date()
     });
+    
+    location.reload();
   }
 
   onLoginFail(jqXhr) {

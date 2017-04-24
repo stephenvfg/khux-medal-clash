@@ -1081,6 +1081,7 @@ app.put('/api/user/votes', isAuthenticated, function(req, res, next) {
   var loser = req.body.loser ? req.body.loser : undefined;
 
   async.waterfall([
+
     function(done) {
       Vote.findOne({ _id: id }, function(err, vote) {
         done(err, vote);
@@ -1111,6 +1112,58 @@ app.put('/api/user/votes', isAuthenticated, function(req, res, next) {
     }
   ], function(err) {
     if (err) return next(err);
+  });
+});
+
+/**
+ * PUT /api/medal/refresh
+ * Refreshes medal vote information
+ */
+
+app.put('/api/medal/refresh', isAuthenticated, function(req, res, next) {
+
+  var id = req.body.id;
+
+  async.parallel([
+    function(callback) {
+      Medal.findOne({ _id: id }, function(err, medal) {
+        callback(err, medal);
+      });
+    },
+    function(callback) {
+      Vote.count({ winner: id, _active: true }, function(err, wins) {
+        callback(err, wins);
+      });
+    },
+    function(callback) {
+      Vote.count({ loser: id, _active: true }, function(err, losses) {
+        callback(err, losses);
+      });
+    }
+  ],
+  function(err, results) {
+    if (err) return next(err);
+
+    var medal = results[0];
+    var wins = results[1];
+    var losses = results[2];
+
+    if (!medal) {
+      return res.status(404).send({ message: 'Medal not found.' });
+    }
+
+    async.parallel([
+      function(callback) {
+        medal.wins = wins;
+        medal.losses = losses;
+        medal.save(function(err) {
+          callback(err);
+        });
+      }
+    ], function(err) {
+      if (err) return next(err);
+      res.status(200).end();
+    });
   });
 });
 

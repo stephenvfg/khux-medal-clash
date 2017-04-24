@@ -43,6 +43,7 @@ class UserAdminStore {
 
   onUpdateContributorSuccess(message) {
     toastr.success(message);
+    UserAdminActions.getUsers(this.i);
   }
 
   onUpdateContributorFail(jqXhr) {
@@ -51,6 +52,7 @@ class UserAdminStore {
 
   onUpdateAdminSuccess(message) {
     toastr.success(message);
+    UserAdminActions.getUsers(this.i);
   }
 
   onUpdateAdminFail(jqXhr) {

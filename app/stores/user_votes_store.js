@@ -54,11 +54,20 @@ class UserVotesStore {
     toastr.error(jqXhr.responseJSON.message);
   }
 
-  onUpdateVoteSuccess(message) {
-    toastr.success(message);
+  onUpdateVoteSuccess(data) {
+    toastr.success(data.message);
+    UserVotesActions.refreshMedal(data.winner);
+    UserVotesActions.refreshMedal(data.loser);
+    UserVotesActions.getVotes(this.i);
   }
 
   onUpdateVoteFail(jqXhr) {
+    toastr.error(jqXhr.responseJSON.message);
+  }
+
+  onRefreshMedalSuccess(message) { /* do nothing */ }
+
+  onRefreshMedalFail(jqXhr) {
     toastr.error(jqXhr.responseJSON.message);
   }
 }

@@ -13,6 +13,8 @@ class UserVotesActions {
       'getVoteCountFail',
       'updateVoteSuccess',
       'updateVoteFail',
+      'refreshMedalSuccess',
+      'refreshMedalFail',
       'updateIndex'
     );
   }
@@ -74,10 +76,27 @@ class UserVotesActions {
       }
     })
       .done((data) => {
-        this.actions.updateVoteSuccess(data.message);
+        var res = { message: data.message, winner: winner, loser: loser };
+        this.actions.updateVoteSuccess(res);
       })
       .fail((jqXhr) => {
         this.actions.updateVoteFail(jqXhr);
+      });
+  }
+
+  refreshMedal(id) {
+    $.ajax({
+      type: 'PUT',
+      url: '/api/medal/refresh',
+      data: { 
+        id: id
+      }
+    })
+      .done((data) => {
+        this.actions.refreshMedalSuccess(data.message);
+      })
+      .fail((jqXhr) => {
+        this.actions.refreshMedalFail(jqXhr);
       });
   }
 }
