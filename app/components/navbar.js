@@ -188,6 +188,7 @@ export default class Navbar extends Component {
         <div id='navbar' className='navbar-collapse collapse'>
           <ul className='nav navbar-nav'>
             <li><Link to='/' className='nav-btn'>Clash</Link></li>
+            <li><Link to='/howto'>How To</Link></li>
             <li><Link to='/stats'>Stats</Link></li>
             <li className='dropdown'>
               <a href='#' className='dropdown-toggle' data-toggle='dropdown'>Top 100 <span className='caret'></span></a>
