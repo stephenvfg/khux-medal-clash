@@ -234,6 +234,7 @@ export default class Navbar extends Component {
                 <a href='#' className='dropdown-toggle' data-toggle='dropdown'>{this.state.user.username} <span className='caret'></span></a>
                 <ul className='dropdown-menu'>
                   <li><Link to='/profile'>Profile</Link></li>
+                  <li><Link to='/votes'>My Votes</Link></li>
                   { this.state.user.contributor ? (<li><Link to='/contributor'>Contributor</Link></li>) : ('') }
                   { this.state.user.admin ? (<li><Link to='/admin'>Admin</Link></li>) : ('') }
                   <li>

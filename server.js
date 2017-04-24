@@ -399,8 +399,44 @@ app.get('/api/medals', function(req, res, next) {
     .exec(function(err, medalOne) {
       if (err) return next(err);
 
-      if (medalOne.length === 1) {
+      if (medalOne[0] != null) {
         medalArray.push(medalOne[0]);
+
+        /* pick second medal at random as long as it's different from first */
+        Medal.find({ random: { $near: [Math.random(), 0] } })
+          .where('_active', true)
+          .where('voted', false)
+          .where('_id', {$ne: medalOne[0]._id})
+          .where('no', {$ne: medalOne[0].no})
+          .limit(1)
+          .exec(function(err, medalTwo) {
+            if (err) return next(err);
+
+            if (medalTwo.length === 1) {
+              medalArray.push(medalTwo[0]);
+            }
+
+            if (medalArray.length === 2) {
+              return res.send(medalArray);
+            } 
+
+            /* do this is there weren't enough medals that haven't been voted yet */
+            /* set all medals as voted = false and pick two at random */
+            Medal.update({}, { $set: { voted: false } }, { multi: true }, function(err) {
+          
+              Medal.find({ random: { $near: [Math.random(), 0] } })
+                .where('_active', true)
+                .limit(2)
+                .exec(function(err, medals) {
+                  if (err) return next(err);
+
+                  if (medals.length === 2) {
+                    return res.send(medals);
+                  }
+                });
+            });
+          });
+
       } else {
         /* do this is there weren't enough medals that haven't been voted yet */
         /* set all medals as voted = false and pick two at random */
@@ -418,41 +454,7 @@ app.get('/api/medals', function(req, res, next) {
             });
           });
       }
-
-      /* pick second medal at random as long as it's different from first */
-      Medal.find({ random: { $near: [Math.random(), 0] } })
-        .where('_active', true)
-        .where('voted', false)
-        .where('no', {$ne: medalOne[0].no})
-        .limit(1)
-        .exec(function(err, medalTwo) {
-          if (err) return next(err);
-
-          if (medalTwo.length === 1) {
-            medalArray.push(medalTwo[0]);
-          }
-
-          if (medalArray.length === 2) {
-            return res.send(medalArray);
-          } 
-
-          /* do this is there weren't enough medals that haven't been voted yet */
-          /* set all medals as voted = false and pick two at random */
-          Medal.update({}, { $set: { voted: false } }, { multi: true }, function(err) {
-        
-            Medal.find({ random: { $near: [Math.random(), 0] } })
-              .where('_active', true)
-              .limit(2)
-              .exec(function(err, medals) {
-                if (err) return next(err);
-
-                if (medals.length === 2) {
-                  return res.send(medals);
-                }
-              });
-          });
-        });
-      });
+    });
   });
 
 /**
@@ -480,12 +482,13 @@ app.get('/api/medals/featured', function(req, res, next) {
       Medal.find({ random: { $near: [Math.random(), 0] } })
         .where('_active', true)
         .where('voted', false)
+        .where('_id', {$ne: medalOne[0]._id})
         .where('no', {$ne: medalOne[0].no})
         .limit(1)
         .exec(function(err, medalTwo) {
           if (err) return next(err);
 
-          if (medalTwo.length === 1) {
+          if (medalTwo[0] != null) {
             medalArray.push(medalTwo[0]);
           }
 

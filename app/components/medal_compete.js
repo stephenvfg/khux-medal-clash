@@ -6,6 +6,7 @@ import { first, without, findWhere } from 'underscore';
 import MedalImg from './medal_img';
 import MedalCard from './medal_card';
 import VotesGoal from './votes_goal';
+import NotePanel from './note_panel';
 
 export default class medal_compete extends Component {
 
@@ -81,6 +82,9 @@ export default class medal_compete extends Component {
 
     return (
       <div className='container'>
+        { this.state.showNotePanel ? (
+            <NotePanel />
+          ) : ('') }
         <div className='votes-goal-container'>
           <VotesGoal key={this.state.votesKey} />
         </div>
