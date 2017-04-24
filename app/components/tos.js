@@ -4,7 +4,7 @@ import { Link } from 'react-router';
 export default (props) => {
 
   return (
-    <div className='container roadmap'>
+    <div className='container tos'>
       <div className='row'>
         <div className='col-xs-12 col-sm-12'>
           <h2>Web Site Terms and Conditions of Use </h2>
