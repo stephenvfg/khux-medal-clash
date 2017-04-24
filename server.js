@@ -792,6 +792,7 @@ app.get('/api/medals/:id/votes', function(req, res, next) {
 
   Vote
     .find({ "$or": [{ winner: id }, { loser: id }] })
+    .where('_active', true)
     .sort('-date') // Sort in descending order (newest on top)
     .limit(10)
     .exec(function(err, votes) {
@@ -809,6 +810,7 @@ app.get('/api/votes', function(req, res, next) {
 
   Vote
     .find()
+    .where('_active', true)
     .sort('-date') // Sort in descending order (newest on top)
     .limit(100)
     .exec(function(err, votes) {
@@ -839,6 +841,7 @@ app.get('/api/votes/medal/:id', function(req, res, next) {
 
   Vote
     .find({ "$or": [{ winner: id }, { loser: id }] })
+    .where('_active', true)
     .sort('-date') // Sort in descending order (newest on top)
     .limit(10)
     .exec(function(err, votes) {
@@ -1014,6 +1017,91 @@ app.put('/api/user', isAuthenticated, function(req, res, next) {
               if (err) return next(err)
               res.status(200).send({ message: 'Profile information updated successfully.' });
             })
+          })
+        }
+      ]);
+    }
+  ], function(err) {
+    if (err) return next(err);
+  });
+});
+
+/**
+ * GET /api/user/votes
+ * Returns votes tied to a user.
+ */
+
+app.get('/api/user/votes', isAuthenticated, function(req, res, next) {
+  var start = req.query.start ? parseInt(req.query.start) : 0;
+
+  if (!req.user) {
+    return res.status(400).send({ message: 'Must be logged in to update votes.' });
+  }
+
+  Vote
+    .find({ voter: req.user._id })
+    .sort('-date') // Sort in descending order (newest on top)
+    .limit(20)
+    .skip(start)
+    .exec(function(err, votes) {
+      if (err) return next(err);
+      res.send(votes);
+    });
+});
+
+/**
+ * GET /api/user/votes/count
+ * Returns count of votes tied to a user.
+ */
+
+app.get('/api/user/votes/count', isAuthenticated, function(req, res, next) {
+  if (!req.user) {
+    return res.status(400).send({ message: 'Must be logged in to get user votes.' });
+  }
+
+  Vote.count({ voter: req.user._id }, function(err, count) {
+    if (err) return next(err);
+    res.send({ count: count });
+  });
+});
+
+/**
+ * PUT /api/user/votes
+ * Update user vote information. 
+ */
+
+app.put('/api/user/votes', isAuthenticated, function(req, res, next) {
+
+  var id = req.body.id;
+  var active = req.body.active ? req.body.active : undefined;
+  var winner = req.body.winner ? req.body.winner : undefined;
+  var loser = req.body.loser ? req.body.loser : undefined;
+
+  async.waterfall([
+    function(done) {
+      Vote.findOne({ _id: id }, function(err, vote) {
+        done(err, vote);
+      });
+    },
+    function(vote, done) {
+      if (!vote) {
+        return res.status(404).send({ message: 'Could not find vote.' });
+      }
+
+      if (!req.user._id.equals(vote.voter)) {
+        return res.status(404).send({ message: 'You can only change your own votes.' });
+      }
+
+      async.parallel([
+        function(callback) {
+
+          if (active) { vote._active = active; }
+          if (winner) { vote.winner = winner; }
+          if (loser) { vote.loser = loser; }
+
+          vote.save(function(err) {
+            if (err) return next(err)
+            res.status(200).send({ message: 'Vote information updated successfully.' });
           })
         }
       ]);
