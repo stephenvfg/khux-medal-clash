@@ -9,8 +9,6 @@ export default (props) => {
         <div className='col-xs-12 col-sm-4'>
           <h1>Launch checklist</h1>
           <ul>
-            <li>ssl and paid heroku dyno</li>
-            <li>Add "HOW THIS WORKS" section... medals in system (boosted/guilted) --> vote --> generate stats --> vote more --> create geniune ranking list --> view other info</li>
             <li>FINAL CLEANUP: Check for any personal / irrelvant information, clean up this roadmap page</li>
             <li>FINAL CLEANUP: Verify all important user flows/paths</li>
           </ul>
@@ -60,6 +58,8 @@ export default (props) => {
         <div className='col-xs-12 col-sm-12'>
           <h1>Done</h1>
           <ul>
+            <li><del>ssl and paid heroku dyno</del></li>
+            <li><del>Add "HOW THIS WORKS" section... medals in system (boosted/guilted) --> vote --> generate stats --> vote more --> create geniune ranking list --> view other info</del></li>
             <li><del>Ask to sign in / make user account after first 7 clicks: "You can play without registering BUT if you register you get to ..."</del></li>
             <li><del>Add personal votes history page</del></li>
             <li><del>Add ability to undo vote</del></li>

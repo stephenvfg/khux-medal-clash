@@ -10,6 +10,7 @@ import MedalList from './components/medal_list';
 import Stats from './components/stats';
 import Roadmap from './components/roadmap';
 import TOS from './components/tos';
+import HowThisWorks from './components/how_this_works';
 import User from './components/user';
 import UserVotes from './components/user_votes';
 import UserAdmin from './components/user_admin';
@@ -26,6 +27,7 @@ export default (
     <Route path='/stats' component={Stats} />
     <Route path='/roadmap' component={Roadmap} />
     <Route path='/tos' component={TOS} />
+    <Route path='/howto' component={HowThisWorks} />
     <Route path='/profile' component={User} />
     <Route path='/votes' component={UserVotes} />
     <Route path='/admin' component={UserAdmin} />
