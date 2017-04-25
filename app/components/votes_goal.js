@@ -28,18 +28,18 @@ export default class VotesGoal extends Component {
 
   render() {
 
-    var pct = (this.state.count/100000)*100 + '%';
+    var pct = (this.state.count/50000)*100 + '%';
 
     return (
       <div className='votes-goal'>
         <div className='col-xs-12 col-sm-12 card'>
           <div>
-            <h4>Medal statistics won't be valuable until we reach a large number of votes - <strong>help reach our goal of 100k votes by May 31st</strong></h4>
+            <h4>Medal statistics won't be valuable until we reach a large number of votes - <strong>help reach our goal of 50k votes by May 31st</strong></h4>
             <a href='#' onClick={this.hideVotes}></a>
           </div>
           <div className='progress'>
             <div className='progress-bar progress-bar-striped active' role='progressbar'
-                aria-valuenow={this.state.count} aria-valuemin='0' aria-valuemax='100000' style={{width: pct}}>
+                aria-valuenow={this.state.count} aria-valuemin='0' aria-valuemax='50000' style={{width: pct}}>
               {this.state.count}
             </div>
           </div>

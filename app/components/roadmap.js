@@ -26,6 +26,10 @@ export default (props) => {
               <span>Add pagination on pages with lists of medals (for example, the Top 100 page) so that it's easier to browse the medals</span>
             </li>
             <li>
+              <h3>User profile page</h3>
+              <span>Add a public-facing profile page for users with accounts. The profile page will have information on past votes, self-identified "favorite" medals, and user-specific stats like "preferred attribute/affinity"</span>
+            </li>
+            <li>
               <h3>Medal votes pagination</h3>
               <span>Add pagination to votes history on medal pages so that users can browse all votes</span>
             </li>

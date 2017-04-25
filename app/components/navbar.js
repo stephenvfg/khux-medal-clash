@@ -182,7 +182,8 @@ export default class Navbar extends Component {
             <span className='icon-bar'></span>
           </button>
           <Link to='/' className='navbar-brand'>
-            KHUX Medal Clash
+            <img src='/img/logo.png' />
+            <span>KHUX Medal Clash</span>
           </Link>
         </div>
         <div id='navbar' className='navbar-collapse collapse'>
