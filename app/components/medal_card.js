@@ -30,16 +30,12 @@ export default (props) => {
       	<div className={'col-xs-3 att-' + props.medal.attribute}>
 		      <p><strong>{props.medal.attribute}</strong></p>
 		    </div>
-		    { props.medal.isGuilted ? (
-	    		<div className='col-xs-3'>
-		  			<p className="spText"><em>Guilted</em></p>
-		  		</div>
-			  ) : ('') } 
-			  { props.medal.isBoosted ? (
-	    		<div className='col-xs-3'>
-		  			<p className="spText"><em>Boosted</em></p>
-		  		</div>
-			  ) : ('') }
+    		<div className='col-xs-3'>
+	  			<p>&nbsp;</p>
+	  		</div>
+    		<div className='col-xs-3'>
+	  			<p className="tier"><strong>{'Tier ' + props.medal.tier}</strong></p>
+	  		</div>
 		  </div>
     	<div className='row card-atk'>
       	<div className='col-xs-3'>
