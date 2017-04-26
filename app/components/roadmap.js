@@ -18,6 +18,10 @@ export default (props) => {
               <span>Add the ability to filter medals by affinity, attribute, tier, target, etc</span>
             </li>
             <li>
+              <h3>More medal categories</h3>
+              <span>Categorize medals by usage/type ("attackers", "buffers", "healers", "defensive", etc)</span>
+            </li>
+            <li>
               <h3>Nicer loading placeholders</h3>
               <span>Add placeholder images or animations so that the site looks nicer as content loads</span>
             </li>
@@ -73,6 +77,10 @@ export default (props) => {
             <li>
               <h3>Guilt icon flicker</h3>
               <span>Guilt icon flickers when I click on medal to vote for it</span>
+            </li>
+            <li>
+              <h3>Medals with special characters not appearing on mobile</h3>
+              <span>Images with a file name containing a special character (like Saix, Namine, etc) are not loading on mobile devices</span>
             </li>
           </ul>
         </div>
