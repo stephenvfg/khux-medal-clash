@@ -22,6 +22,10 @@ export default (props) => {
               <span>Categorize medals by usage/type ("attackers", "buffers", "healers", "defensive", etc)</span>
             </li>
             <li>
+              <h3>Feature: "build my setup"</h3>
+              <span>New feature to specify a keyblade and up to 25 medals (w/traits/skills), share the collection, and get input from others on what their setup should look like.</span>
+            </li>
+            <li>
               <h3>Nicer loading placeholders</h3>
               <span>Add placeholder images or animations so that the site looks nicer as content loads</span>
             </li>

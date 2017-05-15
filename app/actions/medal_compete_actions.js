@@ -23,8 +23,13 @@ class MedalCompeteActions {
 
   getTwoMedals() {
 
-    // 10% of the time, use the featured path
-    var pathAppend = (Math.random() > .9) ? '/featured' : '';
+    let r = Math.random();
+    var pathAppend = '';
+
+    // 10% of the time, use the /featured path
+    // 40% of the time, use the /newest path
+    if (r < 0.1) { pathAppend = '/featured'; }
+    else if (r < 0.5) { pathAppend = '/newest'; }
 
     $.ajax({ url: '/api/medals' + pathAppend })
       .done(data => {

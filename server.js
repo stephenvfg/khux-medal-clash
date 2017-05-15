@@ -438,7 +438,7 @@ app.get('/api/medals', function(req, res, next) {
           });
 
       } else {
-        /* do this is there weren't enough medals that haven't been voted yet */
+        /* do this if there weren't enough medals that haven't been voted yet */
         /* set all medals as voted = false and pick two at random */
         Medal.update({}, { $set: { voted: false } }, { multi: true }, function(err) {
       
@@ -455,7 +455,7 @@ app.get('/api/medals', function(req, res, next) {
           });
       }
     });
-  });
+});
 
 /**
  * GET /api/medals/featured
@@ -466,17 +466,15 @@ app.get('/api/medals/featured', function(req, res, next) {
 
   var medalArray = [];
 
-  /* pick first medal from list of 25 least-losses medals */
+  /* pick medal from list of 10 least-voted medals */
   Medal.find()
     .where('_active', true)
-    .sort({'losses':1})
+    .sort({'__v':1})
     .limit(10)
     .exec(function(err, medalOne) {
       if (err) return next(err);
 
-      if (medalOne.length >= 1) {
-        medalArray.push(medalOne[Math.floor(Math.random()*medalOne.length)]);
-      }
+      medalArray.push(medalOne[Math.floor(Math.random()*medalOne.length)]);
 
       /* pick second medal at random as long as it's different from first */
       Medal.find({ random: { $near: [Math.random(), 0] } })
@@ -496,7 +494,7 @@ app.get('/api/medals/featured', function(req, res, next) {
             return res.send(medalArray);
           } 
 
-          /* do this is there weren't enough medals that haven't been voted yet */
+          /* do this if there weren't enough medals that haven't been voted yet */
           /* set all medals as voted = false and pick two at random */
           Medal.update({}, { $set: { voted: false } }, { multi: true }, function(err) {
         
@@ -513,7 +511,68 @@ app.get('/api/medals/featured', function(req, res, next) {
           });
         });
       });
-  });
+});
+
+/**
+ * GET /api/medals/featured
+ * Returns 2 medals where one is featured
+ */
+
+app.get('/api/medals/newest', function(req, res, next) {
+
+  var medalArray = [];
+
+  /* pick first medal from list of newest medals with the least amount of votes */
+  Medal.find()
+    .where('_active', true)
+    .where('__v', {$lt: 80})
+    .sort({'__v':1})
+    .exec(function(err, medalOne) {
+      if (err) return next(err);
+
+      if (medalOne.length >= 1) {
+        medalArray.push(medalOne[Math.floor(Math.random()*medalOne.length)]);
+
+        /* pick second medal at random as long as it's different from first */
+        Medal.find({ random: { $near: [Math.random(), 0] } })
+          .where('_active', true)
+          .where('voted', false)
+          .where('_id', {$ne: medalOne[0]._id})
+          .where('no', {$ne: medalOne[0].no})
+          .limit(1)
+          .exec(function(err, medalTwo) {
+            if (err) return next(err);
+
+            if (medalTwo[0] != null) {
+              medalArray.push(medalTwo[0]);
+            }
+
+            if (medalArray.length === 2) {
+              return res.send(medalArray);
+            } 
+
+            /* do this if there weren't enough medals that haven't been voted yet */
+            /* set all medals as voted = false and pick two at random */
+            Medal.update({}, { $set: { voted: false } }, { multi: true }, function(err) {
+          
+              Medal.find({ random: { $near: [Math.random(), 0] } })
+                .where('_active', true)
+                .limit(2)
+                .exec(function(err, medals) {
+                  if (err) return next(err);
+
+                  if (medals.length === 2) {
+                    return res.send(medals);
+                  }
+                });
+            });
+          });
+      } else {
+        /* if there aren't any new medals then redirect to the standard medal retrieval */
+        res.redirect('/api/medals');
+      }
+    });
+});
 
 /**
  * PUT /api/medals
