@@ -719,6 +719,7 @@ app.get('/api/medals/top', function(req, res, next) {
   Medal
     .find(conditions)
     .where('_active', true)
+    .where('__v', {$gt: 50})
     .sort({'ratio':-1, 'wins':-1})
     .limit(100)
     .exec(function(err, medals) {
@@ -736,6 +737,7 @@ app.get('/api/medals/shame', function(req, res, next) {
   Medal
     .find()
     .where('_active', true)
+    .where('__v', {$gt: 50})
     .sort({'ratio':1, 'losses':-1})
     .limit(100)
     .exec(function(err, medals) {
