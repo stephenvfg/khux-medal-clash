@@ -44,7 +44,7 @@ class MedalCompeteActions {
     $.ajax({
       type: 'PUT',
       url: '/api/medals' ,
-      data: { winner: winner, loser: loser, voter: voter }
+      data: { winner: winner, loser: loser, voter: voter, legit: true }
     })
       .done(() => {
         this.actions.getTwoMedals();

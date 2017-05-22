@@ -584,6 +584,11 @@ app.put('/api/medals', function(req, res, next) {
   var winner = req.body.winner;
   var loser = req.body.loser;
   var voter = req.body.voter ? req.body.voter : null;
+  var legit = req.body.legit;
+
+  if (!legit) {
+    return res.status(200).send({ message: 'You must vote through the web application only.' });
+  }
 
   if (!winner || !loser) {
     return res.status(400).send({ message: 'Voting requires two medals.' });
@@ -627,10 +632,6 @@ app.put('/api/medals', function(req, res, next) {
 
     if (!winner || !loser) {
       return res.status(404).send({ message: 'One of the medals no longer exists.' });
-    }
-
-    if ((winner.voted || loser.voted) && !voter) {
-      return res.status(200).end();
     }
 
     async.parallel([
