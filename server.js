@@ -38,6 +38,7 @@ var mongoose = require('mongoose');
 var Medal = require('./models/medal');
 var Vote = require('./models/vote');
 var User = require('./models/user');
+var News = require('./models/news');
 
 // server
 
@@ -751,7 +752,7 @@ app.get('/api/medals/shame', function(req, res, next) {
   _.each(params, function(value, key) {
     conditions[key] = value;
   });
-  
+
   Medal
     .find(conditions)
     .where('_active', true)
@@ -1030,6 +1031,54 @@ app.get('/api/stats', function(req, res, next) {
         leadingAttribute: results[8]
       });
     });
+});
+
+/**
+ * GET /api/news
+ * Returns 10 most recent news items.
+ */
+
+app.get('/api/news', function(req, res, next) {
+  var start = req.query.start ? parseInt(req.query.start) : 0;
+
+  News
+    .find()
+    .where('_active', true)
+    .sort('-date') // Sort in descending order (newest on top)
+    .limit(10)
+    .skip(start)
+    .exec(function(err, news) {
+      if (err) return next(err);
+      res.send(news);
+    });
+});
+
+/**
+ * GET /api/news/count
+ * Returns the total number of news items.
+ */
+
+app.get('/api/news/count', function(req, res, next) {
+  News.count({ _active: true }, function(err, count) {
+    if (err) return next(err);
+    res.send({ count: count });
+  });
+});
+
+/**
+ * GET /api/news/newest
+ * Returns the most recent news item.
+ */
+
+app.get('/api/news/newest', function(req, res, next) {
+  News
+  .findOne()
+  .where('_active', true)
+  .sort('-date') // Sort in descending order (newest on top)
+  .exec(function(err, news) {
+    if (err) return next(err);
+    res.send(news);
+  });
 });
 
 /////////////////////////////////////////////////////////
@@ -1391,6 +1440,42 @@ app.put('/api/medals/:id', isAuthenticatedContributor, function(req, res, next) 
   ], function(err) {
     if (err) return next(err);
   });
+});
+
+/**
+ * POST /api/news
+ * Adds a new news items to the database.
+ */
+
+app.post('/api/news', isAuthenticatedContributor, function(req, res, next) {
+
+  var headline = req.body.headline;
+  var content = req.body.content;
+  var type = req.body.type;
+  var author = req.body.author;
+
+  async.waterfall([
+    function() {
+      try {
+        var news = new News({
+          headline: headline,
+          content: content,
+          type: type,
+          date: new Date(),
+          author: author
+        });
+
+        news.save(function(err) {
+          if (err) return console.info(err);
+        });
+
+      } catch (e) {
+        res.status(404).send({ message: headline + ' could not be added.' });
+      }
+
+      res.send({ message: headline + ' has been added successfully!' });
+    }
+  ]);
 });
 
 /////////////////////////////////////////////////////////

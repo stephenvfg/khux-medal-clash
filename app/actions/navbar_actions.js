@@ -26,6 +26,8 @@ class NavbarActions {
       'updateSearchQuery',
       'getMedalCountSuccess',
       'getMedalCountFail',
+      'getNewestNewsSuccess',
+      'getNewestNewsFail',
       'findMedalSuccess',
       'findMedalFail',
       'checkUsername',
@@ -130,6 +132,16 @@ class NavbarActions {
       })
       .fail((jqXhr) => {
         this.actions.getMedalCountFail(jqXhr)
+      });
+  }
+
+  getNewestNews() {
+    $.ajax({ url: '/api/news/newest' })
+      .done((data) => {
+        this.actions.getNewestNewsSuccess(data)
+      })
+      .fail((jqXhr) => {
+        this.actions.getNewestNewsFail(jqXhr)
       });
   }
 

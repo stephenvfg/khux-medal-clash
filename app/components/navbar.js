@@ -15,6 +15,7 @@ export default class Navbar extends Component {
 
     NavbarActions.loggedIn();
     NavbarActions.getMedalCount();
+    NavbarActions.getNewestNews();
   }
 
   componentWillUnmount() {
@@ -172,6 +173,11 @@ export default class Navbar extends Component {
       </form>
     );
 
+    var date = new Date(this.state.newsDate);
+    var dateShort = (date.getMonth() + 1) + '/' + date.getDate();
+    var timeDiff = Math.abs(date.getTime() - (new Date()).getTime());
+    var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24)); 
+
     return (
       <nav className='navbar navbar-default navbar-static-top'>
         <div className='navbar-header'>
@@ -221,6 +227,9 @@ export default class Navbar extends Component {
               </ul>
             </li>
             { this.state.user && (this.state.user.admin || this.state.user.contributor) ? (<li><Link to='/add'>Add</Link></li>) : ('') }
+            <li><Link to='/news'>News &nbsp;
+              {this.state.newsDate ? (<span className={(diffDays < 7) ? 'newsDate new' : 'newsDate'}>{dateShort}</span>) : ''}
+            </Link></li>
           </ul>
           <form ref='searchForm' className='navbar-form navbar-left animated' onSubmit={this.handleSubmit.bind(this)}>
             <div className='input-group'>

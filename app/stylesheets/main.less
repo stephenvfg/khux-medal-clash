@@ -67,6 +67,16 @@ body {
   float: none;
 }
 
+.v-top {
+  display: inline-block;
+  vertical-align: top;
+  float: none;
+}
+
+.right-align {
+  text-align: right;
+}
+
 .cap {
   text-transform: capitalize;
 }
@@ -218,6 +228,61 @@ footer .thumb-md {
 
   ul {
     padding-left: 20px;
+  }
+}
+
+/*
+ * News page styles.
+ */
+
+.news-panel {
+  img {
+    max-width: 100%;
+    width: 160px;
+  }
+
+  .date-col {
+    min-width: 90px;
+
+    span {
+      padding: 2px 6px;
+      background-color: rgba(12, 168, 138, 0.82);
+      border-radius: 4px;
+      text-transform: uppercase;
+      font-size: smaller;
+      color: #fff;
+      font-weight: 700;
+
+      &.bug {
+        background-color: rgba(239, 67, 60, 0.82);
+      }
+
+      &.feature {
+        background-color: rgba(133, 83, 198, 0.82);
+      }
+
+      &.announcement {
+        background-color: rgba(12, 168, 138, 0.82);
+      }
+
+      &.medal {
+        background-color: rgba(15, 81, 148, 0.82);
+      }
+    }
+  }
+
+  .news-col {
+    h3 {
+      margin-top: 0;
+      margin-right: 8px;
+      display: inline-block;
+      font-weight: 700;
+    }
+
+    a {
+      color: #0ca88a;
+      font-weight: 700;
+    }
   }
 }
 
@@ -597,6 +662,20 @@ h3.medal-compete {
 .navbar {
   border: 0;
   box-shadow: 0 2px 2px rgba(0,0,0,.05), 0 1px 0 rgba(0,0,0,.05);
+
+  .newsDate {
+    font-size: smaller;
+    padding: 2px 6px;
+    border-radius: 8px;
+    color: #353f44;
+    background-color: rgba(12, 168, 138, .33);
+
+    &.new {
+      background-color: rgba(12, 168, 138, .78);
+      color: #fff;
+      font-weight: 700;
+    }
+  }
 }
 
 .navbar-default .navbar-brand {

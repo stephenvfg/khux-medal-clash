@@ -8,6 +8,8 @@ class NavbarStore {
     this.searchQuery = '';
     this.ajaxAnimationClass = '';
 
+    this.newsDate = '';
+
     this.username = '';
     this.password = '';
     this.password2 = '';
@@ -128,6 +130,14 @@ class NavbarStore {
   }
 
   onGetMedalCountFail(jqXhr) {
+    toastr.error(jqXhr.responseJSON.message);
+  }
+
+  onGetNewestNewsSuccess(data) {
+    this.newsDate = data.date;
+  }
+
+  onGetNewestNewsFail(jqXhr) {
     toastr.error(jqXhr.responseJSON.message);
   }
 

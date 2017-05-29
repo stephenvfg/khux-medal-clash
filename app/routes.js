@@ -14,6 +14,8 @@ import HowThisWorks from './components/how_this_works';
 import User from './components/user';
 import UserVotes from './components/user_votes';
 import UserAdmin from './components/user_admin';
+import NewsAdd from './components/news_add';
+import News from './components/news';
 import UserContributor from './components/user_contributor';
 import UserReset from './components/user_reset';
 import NotFound from './components/not_found';
@@ -31,6 +33,8 @@ export default (
     <Route path='/profile' component={User} />
     <Route path='/votes' component={UserVotes} />
     <Route path='/admin' component={UserAdmin} />
+    <Route path='/news' component={News} />
+    <Route path='/news/add' component={NewsAdd} />
     <Route path='/contributor' component={UserContributor} />
     <Route path='/reset/:token' component={UserReset} />
     <Route path='/medals/:category' component={MedalList}>
