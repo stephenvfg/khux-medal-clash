@@ -251,6 +251,14 @@ footer .thumb-md {
   img {
     max-width: 100%;
     width: 155px;
+
+    @media (max-width: @screen-sm) {
+      width: 80px;
+    }
+
+    &.wide {
+      width: 465px;
+    }
   }
 
   .date-col {
