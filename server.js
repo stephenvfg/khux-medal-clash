@@ -716,6 +716,27 @@ app.get('/api/medals/search', function(req, res, next) {
 });
 
 /**
+ * GET /api/medals/search/results
+ * Looks up a ist of medals by name
+ */
+
+app.get('/api/medals/search/results', function(req, res, next) {
+  var medalName = new RegExp(req.query.name, 'i');
+
+  Medal
+    .find({ name: medalName, isGuilted: false, isBoosted: false })
+    .where('_active', true)
+    .limit(20)
+    .exec(function(err, medals) {
+      if (err) return next(err);
+      if (!medals) {
+        return res.status(404).send({ message: 'Medals not found.' });
+      }
+      res.send(medals);
+    });
+});
+
+/**
  * GET /api/medals/top
  * Return 100 highest ranked medals. Filter by conditions as defined in the app.
  */

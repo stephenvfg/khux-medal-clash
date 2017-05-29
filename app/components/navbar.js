@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router';
 import NavbarStore from '../stores/navbar_store';
 import NavbarActions from '../actions/navbar_actions';
+import NavbarSearch from './navbar_search';
 
 export default class Navbar extends Component {
   constructor(props) {
@@ -233,11 +234,12 @@ export default class Navbar extends Component {
           </ul>
           <form ref='searchForm' className='navbar-form navbar-left animated' onSubmit={this.handleSubmit.bind(this)}>
             <div className='input-group'>
-              <input type='text' className='form-control' placeholder={this.state.totalMedals + ' medal variations'} value={this.state.searchQuery} onChange={NavbarActions.updateSearchQuery} />
+              <input type='text' id='query-field' className='form-control' placeholder={this.state.totalMedals + ' medal variations'} value={this.state.searchQuery} onChange={NavbarActions.updateSearchQuery} />
               <span className='input-group-btn'>
                 <button className='btn btn-default' onClick={this.handleSubmit.bind(this)}><span className='glyphicon glyphicon-search'></span></button>
               </span>
             </div>
+            { this.state.searchQuery && $('#query-field').is(':focus') ? (<NavbarSearch searchQuery={this.state.searchQuery} />) : ('') }
           </form>
           <ul className='nav navbar-nav navbar-right'>
             { this.state.user && this.state.user.username ? (
