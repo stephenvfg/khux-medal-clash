@@ -9,18 +9,22 @@ class MedalListActions {
     );
   }
 
-  getMedals(payload) {
+  getMedals(params, query) {
     let url = '/api/medals/top';
-    let params = {
-      affinity: payload.affinity,
-      attribute: payload.attribute
-    };
 
-    if (payload.category === 'shame') {
+    if (params.category === 'shame') {
       url = '/api/medals/shame';
     }
 
-    $.ajax({ url: url, data: params })
+    let filters = {
+      affinity: query.af || params.affinity,
+      attribute: query.at || params.attribute,
+      target: query.sat,
+      tier: query.t,
+      isGuilted: query.g
+    };
+
+    $.ajax({ url: url, data: filters })
       .done((data) => {
         this.actions.getMedalsSuccess(data);
       })

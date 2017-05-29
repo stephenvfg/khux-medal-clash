@@ -394,6 +394,7 @@ app.get('/api/medals', function(req, res, next) {
   /* pick first medal at random */
   Medal.find()
     .where('_active', true)
+    .where('isBoosted', false)
     .where('voted', false)
     .limit(1)
     .exec(function(err, medalOne) {
@@ -405,6 +406,7 @@ app.get('/api/medals', function(req, res, next) {
         /* pick second medal at random as long as it's different from first */
         Medal.find({ random: { $near: [Math.random(), 0] } })
           .where('_active', true)
+          .where('isBoosted', false)
           .where('voted', false)
           .where('_id', {$ne: medalOne[0]._id})
           .where('no', {$ne: medalOne[0].no})
@@ -426,6 +428,7 @@ app.get('/api/medals', function(req, res, next) {
           
               Medal.find({ random: { $near: [Math.random(), 0] } })
                 .where('_active', true)
+                .where('isBoosted', false)
                 .limit(2)
                 .exec(function(err, medals) {
                   if (err) return next(err);
@@ -444,6 +447,7 @@ app.get('/api/medals', function(req, res, next) {
       
           Medal.find({ random: { $near: [Math.random(), 0] } })
             .where('_active', true)
+            .where('isBoosted', false)
             .limit(2)
             .exec(function(err, medals) {
               if (err) return next(err);
@@ -469,6 +473,7 @@ app.get('/api/medals/featured', function(req, res, next) {
   /* pick medal from list of 10 least-voted medals */
   Medal.find()
     .where('_active', true)
+    .where('isBoosted', false)
     .sort({'__v':1})
     .limit(10)
     .exec(function(err, medalOne) {
@@ -479,6 +484,7 @@ app.get('/api/medals/featured', function(req, res, next) {
       /* pick second medal at random as long as it's different from first */
       Medal.find({ random: { $near: [Math.random(), 0] } })
         .where('_active', true)
+        .where('isBoosted', false)
         .where('voted', false)
         .where('_id', {$ne: medalOne[0]._id})
         .where('no', {$ne: medalOne[0].no})
@@ -500,6 +506,7 @@ app.get('/api/medals/featured', function(req, res, next) {
         
             Medal.find({ random: { $near: [Math.random(), 0] } })
               .where('_active', true)
+              .where('isBoosted', false)
               .limit(2)
               .exec(function(err, medals) {
                 if (err) return next(err);
@@ -514,8 +521,8 @@ app.get('/api/medals/featured', function(req, res, next) {
 });
 
 /**
- * GET /api/medals/featured
- * Returns 2 medals where one is featured
+ * GET /api/medals/newest
+ * Returns 2 medals where one has fewer than 80 votes
  */
 
 app.get('/api/medals/newest', function(req, res, next) {
@@ -525,6 +532,7 @@ app.get('/api/medals/newest', function(req, res, next) {
   /* pick first medal from list of newest medals with the least amount of votes */
   Medal.find()
     .where('_active', true)
+    .where('isBoosted', false)
     .where('__v', {$lt: 80})
     .sort({'__v':1})
     .exec(function(err, medalOne) {
@@ -536,6 +544,7 @@ app.get('/api/medals/newest', function(req, res, next) {
         /* pick second medal at random as long as it's different from first */
         Medal.find({ random: { $near: [Math.random(), 0] } })
           .where('_active', true)
+          .where('isBoosted', false)
           .where('voted', false)
           .where('_id', {$ne: medalOne[0]._id})
           .where('no', {$ne: medalOne[0].no})
@@ -557,6 +566,7 @@ app.get('/api/medals/newest', function(req, res, next) {
           
               Medal.find({ random: { $near: [Math.random(), 0] } })
                 .where('_active', true)
+                .where('isBoosted', false)
                 .limit(2)
                 .exec(function(err, medals) {
                   if (err) return next(err);
@@ -731,12 +741,19 @@ app.get('/api/medals/top', function(req, res, next) {
 
 /**
  * GET /api/medals/shame
- * Returns 100 lowest ranked medals.
+ * Returns 100 lowest ranked medals. Filter by conditions as defined in the app.
  */
 
 app.get('/api/medals/shame', function(req, res, next) {
+  var params = req.query;
+  var conditions = {};
+
+  _.each(params, function(value, key) {
+    conditions[key] = value;
+  });
+  
   Medal
-    .find()
+    .find(conditions)
     .where('_active', true)
     .where('__v', {$gt: 50})
     .sort({'ratio':1, 'losses':-1})

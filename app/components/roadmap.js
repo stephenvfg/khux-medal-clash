@@ -71,6 +71,10 @@ export default (props) => {
           <h1>Known issues</h1>
           <ul className='issues'>
             <li>
+              <h3>"Show Medal Stats" won't stay open</h3>
+              <span>On the medal compete page, the medal stats don't stay open after a vote.</span>
+            </li>
+            <li>
               <h3>Search issues</h3>
               <span>Searching for guilted or boosted medals doesn't work. Same thing for medals with special characters.</span>
             </li>

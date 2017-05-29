@@ -14,7 +14,7 @@ export default class MedalList extends Component {
 
   componentDidMount() {
     MedalListStore.listen(this.onChange);
-    MedalListActions.getMedals(this.props.params);
+    MedalListActions.getMedals(this.props.params, this.props.location.query);
   }
 
   componentWillUnmount() {
@@ -22,8 +22,9 @@ export default class MedalList extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (!isEqual(prevProps.params, this.props.params)) {
-      MedalListActions.getMedals(this.props.params);
+    if (!isEqual(prevProps.location.query, this.props.location.query) ||
+        !isEqual(prevProps.params, this.props.params)) {
+      MedalListActions.getMedals(this.props.params, this.props.location.query);
     }
   }
 

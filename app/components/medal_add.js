@@ -299,7 +299,7 @@ class MedalAdd extends Component {
                               <div className={'form-group ' + this.state.defBoostValidationState}>
                                 <label className='control-label'>Defense Boost</label>
                                 <input type='text' className='form-control' ref='defBoostTextField' value={this.state.defBoost}
-                                       onChange={MedalAddActions.updateDefBoost} autoFocus/>
+                                       onChange={MedalAddActions.updateDefBoost} />
                               </div>
                             </div>
                           </div>
