@@ -29,6 +29,11 @@ export default class medal_compete extends Component {
 
   onChange(state) {
     this.setState(state);
+
+    const showCards = localStorage.getItem('showCards');
+    if (showCards) {
+      this.setState({ showCards: JSON.parse(showCards) });
+    }
   }
 
   handleClick(medal) {
@@ -46,6 +51,7 @@ export default class medal_compete extends Component {
       mixpanel.track("Displayed medal stats");
       this.setState({ showedCardsOnce: true });
     }
+    localStorage.setItem('showCards', JSON.stringify(!this.state.showCards));
     this.setState({ showCards: !this.state.showCards });
   }
 
