@@ -45,6 +45,10 @@ export default class NavbarSearch extends Component {
         { (this.state.searchResults.length > 0) ? (
           <div className='dropdown search-results'>
             <ul className='dropdown-menu'>
+              <li className='search-count'>
+                { this.state.searchResults.length + ' medals found' }
+                { this.state.searchResults.length > 49 ? ' - narrow your search' : '' }
+              </li>
               { results }
             </ul>
           </div> 

@@ -726,7 +726,7 @@ app.get('/api/medals/search/results', function(req, res, next) {
   Medal
     .find({ name: medalName, isGuilted: false, isBoosted: false })
     .where('_active', true)
-    .limit(20)
+    .limit(50)
     .exec(function(err, medals) {
       if (err) return next(err);
       if (!medals) {
